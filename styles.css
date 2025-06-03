@@ -1,8 +1,8 @@
+/* Import Google Font 'Outfit' */
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
 .outfit {
     font-family: "Outfit", sans-serif;
-    font-optical-sizing: auto;
 }
 .navbar-toggler:focus {
     box-shadow: none;
@@ -11,29 +11,135 @@ main {
     color: whitesmoke;
     height: fit-content;
 }
+html {
+    scroll-behavior: smooth;
+}
+
+/* Search and Recent Searches Styles */
 #search-location {
+    background-color: transparent;
     color: white;
-    border: 1px solid white;
-    border-right: none;
-    max-width: 250px;
+    border: none;
+    flex-grow: 1;
+    padding-left: 1rem;
+    box-shadow: none !important;
 }
 #search-location::placeholder {
-    color: white;
+    color: rgba(255, 255, 255, 0.6);
 }
 #search-location:focus {
-    background-color: #015f6e;
-    box-shadow: none;
-    border: 1px solid white;
-    border-right: none;
+    background-color: transparent;
+    box-shadow: none !important;
+    border: none;
+    color: white;
 }
 #button-search {
-    border: 1px solid white;
-    border-left: none;
+    border: none;
+    background-color: transparent;
+    color: white;
+    padding-right: 0.75rem;
+    padding-left: 0.5rem;
 }
+#button-search:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    background-color: #004a55;
+    overflow: hidden;
+    padding: 0.1rem 0.25rem;
+}
+.search-input-wrapper .form-control {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    height: auto;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+}
+.search-input-wrapper .form-control:focus {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+}
+.search-input-wrapper .btn {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    color: white;
+}
+.search-input-wrapper .btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.weatherCarouselContainer {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Ensure it's above other content but below navbar if navbar is also sticky */
+    background-color: #015f6e; /* Match main background */
+    padding: 10px 15px;
+}
+.style-1::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    background-color: #00424c;
+}
+.style-1::-webkit-scrollbar {
+    height: 8px;
+    background-color: #015f6e;
+}
+.style-1::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #b6b2b2;
+}
+.search-card {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: auto;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    align-items: center;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.search-card > li {
+    white-space: nowrap;
+    margin-right: 0.6rem;
+    background-color: #017082;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.825rem;
+    color: white;
+    height: auto;
+    line-height: 1.5;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.search-card > li:last-child {
+    margin-right: 0;
+}
+.search-card > li:hover {
+    background-color: #005c6e;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+.search-card > li.kota-terpilih {
+    background-color: #efb619;
+    color: #00424c;
+    border-color: #efb619;
+    font-weight: bold;
+}
+
+/* Background Colors */
 .bg-1 {
     background-color: #00424c;
 }
-
 .bg-2 {
     background-color: #015f6e;
 }
@@ -46,25 +152,321 @@ main {
 .bg-5 {
     background-color: #efb619;
 }
-.weatherCarouselContainer {
-    position: sticky;
-    padding: 10px;
+
+/* Spinner */
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #fff;
+    width: 24px;
+    height: 24px;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    display: none; /* Initially hidden */
+}
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
-/* Scrollbar */
-.style-1::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    background-color: #00424c;
+/* Temperature Chart */
+#temperatureChart {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+    height: 250px; /* Default height, can be adjusted */
+}
+#chart-tooltip {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    pointer-events: none;
+    display: none;
+    z-index: 1000;
+    font-size: 0.85rem;
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.style-1::-webkit-scrollbar {
-    height: 8px;
+/* Modal Styles */
+.modal-content {
     background-color: #015f6e;
+    color: whitesmoke;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.modal-title {
+    color: #efb619;
+}
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.style-1::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: #b6b2b2;
+/* Weather Detail Card */
+.weather-detail-card {
+    background-color: #017082;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.weather-detail-card .detail-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+.weather-detail-card .detail-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.weather-detail-card .detail-icon {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* About App Section */
+#about-app-section {
+    background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+    color: whitesmoke;
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+}
+#about-app-section h2 {
+    color: #efb619;
+    margin-bottom: 1.5rem;
+}
+#about-app-section p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+#about-app-section .feature-list {
+    list-style: none;
+    padding-left: 0;
+}
+#about-app-section .feature-list li {
+    padding-left: 1.5rem;
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+#about-app-section .feature-list li::before {
+    content: "✓";
+    color: #efb619;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* FAQ Section */
+#faq-section {
+    background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+    color: whitesmoke;
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+#faq-section .faq-main-title {
+    font-size: 2.25rem;
+    color: #efb619;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+#faq-section .faq-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 3rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    text-align: center;
+}
+.faq-item {
+    background-color: #004a55;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.faq-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.faq-item .faq-icon {
+    flex-shrink: 0;
+}
+.faq-item .faq-icon svg {
+    width: 26px;
+    height: 26px;
+    color: #efb619;
+}
+.faq-item .d-flex > div:not(.faq-icon) {
+    margin-left: 1rem;
+}
+.faq-item h5.faq-question-title {
+    font-size: 1.15rem;
+    color: whitesmoke;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+.faq-item p.faq-answer {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.65;
+    margin-bottom: 0;
+}
+
+/* Contact Us Section */
+#contact-us-section {
+    background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+    color: whitesmoke;
+    padding: 2.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+}
+.contact-form-label {
+    color: #e0e0e0;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.contact-form-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.375rem;
+    padding: 0.85rem 1rem;
+    color: whitesmoke;
+    width: 100%;
+    margin-bottom: 1.25rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.contact-form-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+.contact-form-input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #efb619;
+    box-shadow: 0 0 0 0.2rem rgba(239, 182, 25, 0.25);
+    color: whitesmoke;
+}
+.contact-form-textarea {
+    min-height: 130px;
+}
+.contact-submit-btn {
+    background-color: #efb619;
+    color: #00424c;
+    border: none;
+    padding: 0.85rem 1.75rem;
+    border-radius: 0.375rem;
+    font-weight: bold;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.contact-submit-btn:hover {
+    background-color: #d8a007;
+    transform: translateY(-2px);
+}
+.contact-submit-btn:active {
+    background-color: #c08f06;
+    transform: translateY(0px);
+}
+.contact-image-placeholder {
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+.contact-image-placeholder svg {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+}
+.contact-info h5 {
+    color: #efb619;
+    margin-bottom: 0.75rem;
+    font-weight: bold;
+}
+.contact-info p {
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    color: #e0e0e0;
+}
+.contact-info p svg {
+    margin-right: 0.5rem;
+    opacity: 0.8;
+    vertical-align: middle;
+}
+
+/* Footer */
+.footer-nav-item {
+    padding: 0 10px;
+    color: whitesmoke;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.footer-nav-item:hover {
+    color: #efb619;
+}
+.footer-copyright {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Weather Map Section Styles (for the section container if content is added later) */
+#weather-map-section {
+    background-color: #01798c; /* Warna bg-4 dari file Anda */
+    color: whitesmoke;
+    padding: 1.5rem 1rem; /* Sedikit penyesuaian padding */
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+    /* margin-left dan margin-right dihapus jika menggunakan class .container Bootstrap */
+}
+
+#weather-map-section h2 {
+    font-weight: 600; /* Membuat judul sedikit lebih bold */
+}
+
+/* Hero Banner Canvas Specific Styles */
+#hero-banner-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 0.5rem;
 }

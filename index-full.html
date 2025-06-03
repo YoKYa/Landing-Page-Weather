@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Info Cuaca</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+        <style>
+            /* Import Google Font 'Outfit' */
+            @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+
+            .outfit {
+                font-family: "Outfit", sans-serif;
+            }
+            .navbar-toggler:focus {
+                box-shadow: none;
+            }
+            main {
+                color: whitesmoke;
+                height: fit-content;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+
+            /* Search and Recent Searches Styles */
+            #search-location {
+                background-color: transparent;
+                color: white;
+                border: none;
+                flex-grow: 1;
+                padding-left: 1rem;
+                box-shadow: none !important;
+            }
+            #search-location::placeholder {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            #search-location:focus {
+                background-color: transparent;
+                box-shadow: none !important;
+                border: none;
+                color: white;
+            }
+            #button-search {
+                border: none;
+                background-color: transparent;
+                color: white;
+                padding-right: 0.75rem;
+                padding-left: 0.5rem;
+            }
+            #button-search:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+            .search-input-wrapper {
+                display: flex;
+                align-items: center;
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                border-radius: 25px;
+                background-color: #004a55;
+                overflow: hidden;
+                padding: 0.1rem 0.25rem;
+            }
+            .search-input-wrapper .form-control {
+                border: none;
+                box-shadow: none;
+                background-color: transparent;
+                height: auto;
+                padding-top: 0.375rem;
+                padding-bottom: 0.375rem;
+            }
+            .search-input-wrapper .form-control:focus {
+                border: none;
+                box-shadow: none;
+                background-color: transparent;
+            }
+            .search-input-wrapper .btn {
+                border: none;
+                box-shadow: none;
+                background-color: transparent;
+                color: white;
+            }
+            .search-input-wrapper .btn:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+            .weatherCarouselContainer {
+                position: sticky;
+                top: 0;
+                z-index: 10; /* Ensure it's above other content but below navbar if navbar is also sticky */
+                background-color: #015f6e; /* Match main background */
+                padding: 10px 15px;
+            }
+            .style-1::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                border-radius: 10px;
+                background-color: #00424c;
+            }
+            .style-1::-webkit-scrollbar {
+                height: 8px;
+                background-color: #015f6e;
+            }
+            .style-1::-webkit-scrollbar-thumb {
+                border-radius: 10px;
+                -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                background-color: #b6b2b2;
+            }
+            .search-card {
+                display: flex;
+                overflow-x: auto;
+                overflow-y: hidden;
+                height: auto;
+                padding-top: 0.2rem;
+                padding-bottom: 0.2rem;
+                align-items: center;
+                padding-left: 0;
+                margin-bottom: 0;
+            }
+            .search-card > li {
+                white-space: nowrap;
+                margin-right: 0.6rem;
+                background-color: #017082;
+                padding: 0.4rem 1rem;
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.35);
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                font-size: 0.825rem;
+                color: white;
+                height: auto;
+                line-height: 1.5;
+                transition: background-color 0.2s ease, border-color 0.2s ease;
+            }
+            .search-card > li:last-child {
+                margin-right: 0;
+            }
+            .search-card > li:hover {
+                background-color: #005c6e;
+                border-color: rgba(255, 255, 255, 0.5);
+            }
+            .search-card > li.kota-terpilih {
+                background-color: #efb619;
+                color: #00424c;
+                border-color: #efb619;
+                font-weight: bold;
+            }
+
+            /* Background Colors */
+            .bg-1 {
+                background-color: #00424c;
+            }
+            .bg-2 {
+                background-color: #015f6e;
+            }
+            .bg-3 {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+            .bg-4 {
+                background-color: #01798c;
+            }
+            .bg-5 {
+                background-color: #efb619;
+            }
+
+            /* Spinner */
+            .spinner {
+                border: 4px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                border-top: 4px solid #fff;
+                width: 24px;
+                height: 24px;
+                -webkit-animation: spin 1s linear infinite;
+                animation: spin 1s linear infinite;
+                display: none; /* Initially hidden */
+            }
+            @-webkit-keyframes spin {
+                0% {
+                    -webkit-transform: rotate(0deg);
+                }
+                100% {
+                    -webkit-transform: rotate(360deg);
+                }
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Temperature Chart */
+            #temperatureChart {
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 0.5rem;
+                margin-top: 1rem;
+                width: 100%;
+                height: 250px; /* Default height, can be adjusted */
+            }
+            #chart-tooltip {
+                position: fixed;
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 5px;
+                pointer-events: none;
+                display: none;
+                z-index: 1000;
+                font-size: 0.85rem;
+                text-align: center;
+                line-height: 1.4;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Modal Styles */
+            .modal-content {
+                background-color: #015f6e;
+                color: whitesmoke;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .modal-header {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .modal-footer {
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .modal-title {
+                color: #efb619;
+            }
+            .btn-close {
+                filter: invert(1) grayscale(100%) brightness(200%);
+            }
+
+            /* Weather Detail Card */
+            .weather-detail-card {
+                background-color: #017082;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                text-align: center;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .weather-detail-card .detail-label {
+                font-size: 0.8rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 0.25rem;
+                text-transform: uppercase;
+            }
+            .weather-detail-card .detail-value {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+            .weather-detail-card .detail-icon {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 0.5rem;
+                opacity: 0.8;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* About App Section */
+            #about-app-section {
+                background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+                color: whitesmoke;
+                padding: 2.5rem;
+                border-radius: 0.75rem;
+                margin-top: 2rem;
+            }
+            #about-app-section h2 {
+                color: #efb619;
+                margin-bottom: 1.5rem;
+            }
+            #about-app-section p {
+                font-size: 1rem;
+                line-height: 1.6;
+                margin-bottom: 1rem;
+            }
+            #about-app-section .feature-list {
+                list-style: none;
+                padding-left: 0;
+            }
+            #about-app-section .feature-list li {
+                padding-left: 1.5rem;
+                position: relative;
+                margin-bottom: 0.75rem;
+            }
+            #about-app-section .feature-list li::before {
+                content: "✓";
+                color: #efb619;
+                position: absolute;
+                left: 0;
+                font-weight: bold;
+            }
+
+            /* FAQ Section */
+            #faq-section {
+                background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+                color: whitesmoke;
+                padding: 2.5rem;
+                border-radius: 0.75rem;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            #faq-section .faq-main-title {
+                font-size: 2.25rem;
+                color: #efb619;
+                font-weight: bold;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+            #faq-section .faq-subtitle {
+                color: rgba(255, 255, 255, 0.85);
+                margin-bottom: 3rem;
+                font-size: 1rem;
+                line-height: 1.7;
+                text-align: center;
+            }
+            .faq-item {
+                background-color: #004a55;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                margin-bottom: 1.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            }
+            .faq-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            }
+            .faq-item .faq-icon {
+                flex-shrink: 0;
+            }
+            .faq-item .faq-icon svg {
+                width: 26px;
+                height: 26px;
+                color: #efb619;
+            }
+            .faq-item .d-flex > div:not(.faq-icon) {
+                margin-left: 1rem;
+            }
+            .faq-item h5.faq-question-title {
+                font-size: 1.15rem;
+                color: whitesmoke;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
+            }
+            .faq-item p.faq-answer {
+                font-size: 0.95rem;
+                color: rgba(255, 255, 255, 0.8);
+                line-height: 1.65;
+                margin-bottom: 0;
+            }
+
+            /* Contact Us Section */
+            #contact-us-section {
+                background-color: #015f6e; /* Adjusted to match general theme if needed, or keep as #015f6e */
+                color: whitesmoke;
+                padding: 2.5rem;
+                border-radius: 0.75rem;
+                margin-top: 2rem;
+            }
+            .contact-form-label {
+                color: #e0e0e0;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }
+            .contact-form-input {
+                background-color: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 0.375rem;
+                padding: 0.85rem 1rem;
+                color: whitesmoke;
+                width: 100%;
+                margin-bottom: 1.25rem;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            }
+            .contact-form-input::placeholder {
+                color: rgba(255, 255, 255, 0.5);
+            }
+            .contact-form-input:focus {
+                background-color: rgba(255, 255, 255, 0.15);
+                border-color: #efb619;
+                box-shadow: 0 0 0 0.2rem rgba(239, 182, 25, 0.25);
+                color: whitesmoke;
+            }
+            .contact-form-textarea {
+                min-height: 130px;
+            }
+            .contact-submit-btn {
+                background-color: #efb619;
+                color: #00424c;
+                border: none;
+                padding: 0.85rem 1.75rem;
+                border-radius: 0.375rem;
+                font-weight: bold;
+                width: 100%;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                transition: background-color 0.2s ease, transform 0.1s ease;
+            }
+            .contact-submit-btn:hover {
+                background-color: #d8a007;
+                transform: translateY(-2px);
+            }
+            .contact-submit-btn:active {
+                background-color: #c08f06;
+                transform: translateY(0px);
+            }
+            .contact-image-placeholder {
+                min-height: 250px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: rgba(255, 255, 255, 0.6);
+                font-weight: 500;
+                margin-bottom: 1.5rem;
+            }
+            .contact-image-placeholder svg {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 0.75rem;
+                opacity: 0.5;
+            }
+            .contact-info h5 {
+                color: #efb619;
+                margin-bottom: 0.75rem;
+                font-weight: bold;
+            }
+            .contact-info p {
+                margin-bottom: 0.6rem;
+                font-size: 0.95rem;
+                color: #e0e0e0;
+            }
+            .contact-info p svg {
+                margin-right: 0.5rem;
+                opacity: 0.8;
+                vertical-align: middle;
+            }
+
+            /* Footer */
+            .footer-nav-item {
+                padding: 0 10px;
+                color: whitesmoke;
+                text-decoration: none;
+                font-size: 0.9rem;
+            }
+            .footer-nav-item:hover {
+                color: #efb619;
+            }
+            .footer-copyright {
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.7);
+            }
+
+            /* Weather Map Section Styles (for the section container if content is added later) */
+            #weather-map-section {
+                background-color: #01798c; /* Warna bg-4 dari file Anda */
+                color: whitesmoke;
+                padding: 1.5rem 1rem; /* Sedikit penyesuaian padding */
+                border-radius: 0.75rem;
+                margin-top: 2rem;
+                /* margin-left dan margin-right dihapus jika menggunakan class .container Bootstrap */
+            }
+
+            #weather-map-section h2 {
+                font-weight: 600; /* Membuat judul sedikit lebih bold */
+            }
+
+            /* Hero Banner Canvas Specific Styles */
+            #hero-banner-canvas {
+                width: 100%;
+                height: 100%;
+                display: block;
+                border-radius: 0.5rem;
+            }
+        </style>
+    </head>
+    <body class="outfit">
+        <header class="outfit">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-1">
+                <div class="container-fluid">
+                    <button class="navbar-toggler ms-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbars" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-md-between" id="navbars">
+                        <div class="navbar-brand">Aplikasi Cuaca</div>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">BERANDA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#prakiraan-cuaca-section">PRAKIRAAN</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="#weather-details-section">DETAIL</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#about-app-section">TENTANG</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#faq-section">FAQ</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav">
+                            <li class="nav-item ms-auto">
+                                <a class="nav-link" href="#contact-us-section">HUBUNGI KAMI</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main class="bg-2 outfit py-4">
+            <div class="weatherCarouselContainer container d-lg-flex align-items-center w-100 justify-content-between mb-4">
+                <div class="d-flex align-items-center order-lg-first flex-grow-1 me-lg-3" style="min-width: 0px">
+                    <ul class="list-unstyled style-1 search-card w-100" id="recent-searches-list"></ul>
+                </div>
+                <div class="order-lg-last mb-3 mb-lg-0 ms-lg-auto">
+                    <div class="search-input-wrapper" style="min-width: 220px; max-width: 280px">
+                        <input type="text" class="form-control" id="search-location" placeholder="Cari lokasi..." aria-label="Cari lokasi" />
+                        <button class="btn" id="button-search" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="search-error-message" class="text-danger mt-1" style="display: none; font-size: 0.8rem; text-align: right"></div>
+                </div>
+            </div>
+
+            <section class="container" id="hero-banner">
+                <div class="text-white rounded-2 m-2 bg-4 p-4" style="min-height: 480px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end">
+                    <canvas id="hero-banner-canvas" style="position: absolute; top: 0; left: 0"></canvas>
+                    <div style="position: relative; z-index: 1; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
+                        <p id="welcome-message" class="fs-5">Selamat datang di Aplikasi Cuaca!</p>
+                        <p id="current-location-display" class="fs-5 fw-bold"></p>
+                        <div id="loading-spinner" class="spinner mx-auto mt-3"></div>
+                        <div id="error-message" class="text-danger mt-3" style="display: none; font-size: 0.9rem"></div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                        <div class="bg-4 rounded-2 p-4 mx-2 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-block">
+                                    <div class="fw-bold fs-5">Cuaca Saat Ini</div>
+                                    <div class="text-white-50" style="font-size: 0.9rem" id="current-time"></div>
+                                </div>
+                                <div class="rounded-2 px-3 py-2 align-items-center d-flex bg-5 text-dark" style="font-size: 0.8rem">Prakiraan salah?</div>
+                            </div>
+
+                            <div class="my-3 d-flex align-items-center">
+                                <div>
+                                    <img id="current-weather-icon" src="https://placehold.co/72x72/01798c/ffffff?text=Icon" width="72px" alt="Ikon Cuaca Saat Ini" class="rounded-circle bg-light bg-opacity-25" />
+                                </div>
+                                <div class="ms-3">
+                                    <span style="font-size: 64px" id="current-temp">--</span>
+                                    <span class="fs-4 align-top">°C</span>
+                                </div>
+                                <div class="ms-4">
+                                    <div class="fw-bold fs-5" id="weather-description">Memuat...</div>
+                                    <div style="font-size: 0.9rem">Terasa seperti <span id="feels-like-temp">--</span>°</div>
+                                </div>
+                            </div>
+                            <div id="weather-summary" style="font-size: 0.9rem"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <div class="d-grid gap-3 me-2 ms-2 ms-lg-0 h-100" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))">
+                            <div class="bg-4 rounded-2 p-3">
+                                <div class="fs-6 fw-bold text-center mb-2">ANGIN</div>
+                                <div class="p-1 d-flex align-items-center justify-content-around">
+                                    <div>
+                                        <img src="assets/wind" width="60px" alt="Ikon Angin" onerror="this.onerror=null; this.src='https://placehold.co/60x60/01798c/ffffff?text=Angin';" />
+                                    </div>
+                                    <div class="text-center ms-2">
+                                        <div style="font-size: 0.85em">Angin dari <span id="wind-direction-text" class="fw-semibold">--</span></div>
+                                        <div style="font-size: 1.1em" id="wind-speed" class="fw-bold">-- <span>km/jam</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-4 rounded-2 p-3">
+                                <div class="fs-6 fw-bold text-center mb-2">KELEMBAPAN</div>
+                                <div class="p-1 d-flex align-items-center justify-content-around">
+                                    <div>
+                                        <img src="assets/humidity" width="60px" alt="Ikon Kelembapan" onerror="this.onerror=null; this.src='https://placehold.co/60x60/01798c/ffffff?text=Lembap';" />
+                                    </div>
+                                    <div class="text-center ms-2">
+                                        <div style="font-size: 0.85em">Persentase</div>
+                                        <div style="font-size: 1.1em" id="humidity-percentage" class="fw-bold">--%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-4 rounded-2 p-3">
+                                <div class="fs-6 fw-bold text-center mb-2">JARAK PANDANG</div>
+                                <div class="p-1 d-flex align-items-center justify-content-around">
+                                    <div>
+                                        <img src="assets/visibility" width="60px" alt="Ikon Jarak Pandang" onerror="this.onerror=null; this.src='https://placehold.co/60x60/01798c/ffffff?text=Lihat';" />
+                                    </div>
+                                    <div class="text-center ms-2">
+                                        <div style="font-size: 0.85em">Mencapai</div>
+                                        <div style="font-size: 1.1em" id="visibility-distance" class="fw-bold">-- KM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-4 rounded-2 p-3">
+                                <div class="fs-6 fw-bold text-center mb-2">TUTUPAN AWAN</div>
+                                <div class="p-1 d-flex align-items-center justify-content-around">
+                                    <div>
+                                        <img src="assets/tcc" width="60px" alt="Ikon Tutupan Awan" onerror="this.onerror=null; this.src='https://placehold.co/60x60/01798c/ffffff?text=Awan';" />
+                                    </div>
+                                    <div class="text-center ms-2">
+                                        <div style="font-size: 1.1em" id="cloud-cover" class="fw-bold">--%</div>
+                                        <div style="font-size: 0.85em">Persentase</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="container mt-4" id="prakiraan-cuaca-section">
+                <div class="bg-4 rounded-2 p-4 mx-2">
+                    <h2 class="fs-4 mb-3">Prakiraan Cuaca</h2>
+                    <div>
+                        <h3 class="text-white-50 fs-5">Gambaran Umum Temperatur</h3>
+                        <canvas id="temperatureChart"></canvas>
+                    </div>
+                    <h3 class="text-white-50 fs-5 mt-4 mb-3">Detail Harian</h3>
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3" id="forecast-cards-container"></div>
+                </div>
+            </section>
+            <section class="container mt-4" id="weather-details-section">
+                <div class="bg-4 rounded-2 p-4 mx-2">
+                    <h2 class="fs-4 mb-3">Detail Cuaca</h2>
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="weather-details-grid"></div>
+                </div>
+            </section>
+            <section class="container" id="about-app-section">
+                <h2 class="fs-3 text-center mb-4">Tentang Aplikasi Cuaca Ini</h2>
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <p>
+                            Selamat datang di Aplikasi Cuaca kami! Aplikasi ini dirancang untuk memberikan Anda informasi cuaca terkini dan prakiraan yang akurat langsung di ujung jari Anda. Kami berusaha menyajikan data yang mudah dipahami
+                            dengan antarmuka yang menarik dan responsif.
+                        </p>
+                        <p>
+                            Dengan aplikasi ini, Anda dapat dengan mudah mencari cuaca di berbagai lokasi, melihat detail kondisi saat ini, serta mendapatkan prakiraan untuk beberapa hari ke depan. Kami menggunakan data dari sumber
+                            terpercaya untuk memastikan informasi yang Anda terima selalu up-to-date.
+                        </p>
+                        <h4 class="mt-4 mb-3" style="color: #efb619">Fitur Utama:</h4>
+                        <ul class="feature-list">
+                            <li>Pencarian lokasi cuaca yang intuitif.</li>
+                            <li>Informasi cuaca saat ini yang komprehensif (suhu, kelembapan, angin, dll.).</li>
+                            <li>Prakiraan cuaca harian hingga beberapa hari ke depan.</li>
+                            <li>Grafik temperatur interaktif untuk visualisasi tren suhu.</li>
+                            <li>Detail cuaca tambahan seperti indeks UV, tekanan udara, dan waktu matahari terbit/terbenam.</li>
+                            <li>Desain yang responsif untuk pengalaman optimal di berbagai perangkat.</li>
+                            <li>Peta cuaca interaktif dengan pilihan waktu.</li>
+                        </ul>
+                        <p class="mt-4">Kami berkomitmen untuk terus mengembangkan dan meningkatkan aplikasi ini. Jika Anda memiliki saran atau masukan, jangan ragu untuk menghubungi kami melalui formulir kontak di bawah.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="container" id="faq-section">
+                <h2 class="faq-main-title">Pertanyaan yang Sering Diajukan</h2>
+                <p class="faq-subtitle">Jawaban cepat untuk pertanyaan yang mungkin Anda miliki. Tidak dapat menemukan apa yang Anda cari? Kirimkan kami pesan.</p>
+                <div class="row">
+                    <div class="col-md-6 faq-item">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 faq-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm1.602-2.027c.048-.533.44-1.034.923-1.418.483-.384.924-.697.924-1.208 0-.512-.353-.846-.846-.846-.492 0-.846.299-.846.817h-.99c0-.933.682-1.616 1.836-1.616.996 0 1.837.545 1.837 1.527 0 .793-.389 1.208-.924 1.616-.535.408-.846.846-.846 1.418h-.99z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="faq-question-title">Bagaimana cara mengganti lokasi cuaca?</h5>
+                                <p class="faq-answer">Ketik nama kota atau lokasi pada kolom pencarian di atas, lalu tekan tombol cari atau Enter. Aplikasi akan menampilkan cuaca untuk lokasi baru.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 faq-item">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 faq-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm1.602-2.027c.048-.533.44-1.034.923-1.418.483-.384.924-.697.924-1.208 0-.512-.353-.846-.846-.846-.492 0-.846.299-.846.817h-.99c0-.933.682-1.616 1.836-1.616.996 0 1.837.545 1.837 1.527 0 .793-.389 1.208-.924 1.616-.535.408-.846.846-.846 1.418h-.99z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="faq-question-title">Seberapa akurat prakiraan cuaca ini?</h5>
+                                <p class="faq-answer">Kami menggunakan data dari OpenWeatherMap API. Meskipun umumnya akurat, semua prakiraan cuaca memiliki potensi variasi, terutama untuk jangka panjang.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 faq-item">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 faq-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm1.602-2.027c.048-.533.44-1.034.923-1.418.483-.384.924-.697.924-1.208 0-.512-.353-.846-.846-.846-.492 0-.846.299-.846.817h-.99c0-.933.682-1.616 1.836-1.616.996 0 1.837.545 1.837 1.527 0 .793-.389 1.208-.924 1.616-.535.408-.846.846-.846 1.418h-.99z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="faq-question-title">Bisakah saya melihat prakiraan cuaca per jam?</h5>
+                                <p class="faq-answer">Saat ini aplikasi menampilkan prakiraan harian. Fitur prakiraan per jam sedang kami pertimbangkan untuk pengembangan di masa mendatang.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 faq-item">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 faq-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M5.933.87a2.89 2.89 0 0 1 4.134 0l.622.638.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636zM7.002 11a1 1 0 1 0 2 0 1 1 0 0 0-2 0zm1.602-2.027c.048-.533.44-1.034.923-1.418.483-.384.924-.697.924-1.208 0-.512-.353-.846-.846-.846-.492 0-.846.299-.846.817h-.99c0-.933.682-1.616 1.836-1.616.996 0 1.837.545 1.837 1.527 0 .793-.389 1.208-.924 1.616-.535.408-.846.846-.846 1.418h-.99z"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="faq-question-title">Informasi apa saja yang ada di "Detail Cuaca"?</h5>
+                                <p class="faq-answer">"Detail Cuaca" mencakup tekanan udara, indeks UV, titik embun, hembusan angin, waktu matahari terbit/terbenam, dan fase bulan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="container" id="contact-us-section">
+                <div class="row">
+                    <div class="col-lg-7 col-md-6 mb-4 mb-md-0">
+                        <h2 class="fs-3 mb-4" style="color: #efb619">Punya Pertanyaan?</h2>
+                        <form id="contactForm">
+                            <div class="mb-3">
+                                <label for="contactFullName" class="form-label contact-form-label">NAMA LENGKAP</label>
+                                <input type="text" class="form-control contact-form-input" id="contactFullName" placeholder="Masukkan nama lengkap Anda" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="contactEmail" class="form-label contact-form-label">ALAMAT EMAIL</label>
+                                <input type="email" class="form-control contact-form-input" id="contactEmail" placeholder="Masukkan alamat email Anda" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="contactPhone" class="form-label contact-form-label">NOMOR TELEPON (Opsional)</label>
+                                <input type="tel" class="form-control contact-form-input" id="contactPhone" placeholder="Masukkan nomor telepon Anda" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="contactSubject" class="form-label contact-form-label">JUDUL</label>
+                                <input type="text" class="form-control contact-form-input" id="contactSubject" placeholder="Masukkan judul pesan" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="contactMessage" class="form-label contact-form-label">PESAN</label>
+                                <textarea class="form-control contact-form-input contact-form-textarea" id="contactMessage" rows="4" placeholder="Tuliskan pesan Anda di sini..." required></textarea>
+                            </div>
+                            <button type="submit" class="contact-submit-btn">KIRIM PESAN</button>
+                        </form>
+                    </div>
+                    <div class="col-lg-5 col-md-6 d-flex flex-column justify-content-center align-items-center align-items-md-start ps-md-5">
+                        <div class="contact-image-placeholder w-100 mb-4">
+                            <img src="assets/windy" alt="windy" width="400" height="400" />
+                            <span class="my-2">Ada yang bisa saya bantu di tengah badai ini?</span>
+                        </div>
+                        <div class="contact-info text-center text-md-start w-100">
+                            <h5 class="mb-3">Informasi Kontak</h5>
+                            <p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"
+                                    />
+                                </svg>
+                                yogiekaprastiyal@gmail.com
+                            </p>
+                            <p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"
+                                    />
+                                </svg>
+                                082232222398
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer class="outfit bg-1 text-white py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+                        <nav>
+                            <a href="#prakiraan-cuaca-section" class="footer-nav-item">PRAKIRAAN CUACA</a>
+                            <a href="#weather-details-section" class="footer-nav-item">DETAIL CUACA</a>
+                            <a href="#weather-map-section" class="footer-nav-item">PETA WILAYAH</a> <a href="#faq-section" class="footer-nav-item">FAQ</a>
+                            <a href="#contact-us-section" class="footer-nav-item">KONTAK</a>
+                        </nav>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <p class="mb-0 footer-copyright">&copy; 2025 By YokYa</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">Kesalahan Pencarian</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body" id="errorModalBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #004a55; border-color: #004a55">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="chart-tooltip"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script>
+            const OPENWEATHER_API_KEY = "28ab0f61d4bd77f5a1cf1ab69e6725d3"; // Leave this as empty string. The Canvas environment will inject the API key.
+            const GEO_BASE_URL = "https://api.openweathermap.org/geo/1.0/direct";
+            const ONE_CALL_BASE_URL = "https://api.openweathermap.org/data/3.0/onecall";
+            const DEFAULT_LOCATION = "Surabaya";
+            const MAX_RECENT_SEARCHES = 5;
+
+            // DOM Elements
+            const searchLocationInput = document.getElementById("search-location");
+            const searchButton = document.getElementById("button-search");
+            const welcomeMessage = document.getElementById("welcome-message");
+            const currentLocationDisplay = document.getElementById("current-location-display");
+            const loadingSpinner = document.getElementById("loading-spinner");
+            const errorMessage = document.getElementById("error-message");
+            const searchErrorMessage = document.getElementById("search-error-message");
+            const currentTimeElement = document.getElementById("current-time");
+            const currentWeatherIcon = document.getElementById("current-weather-icon");
+            const currentTemp = document.getElementById("current-temp");
+            const weatherDescription = document.getElementById("weather-description");
+            const feelsLikeTemp = document.getElementById("feels-like-temp");
+            const weatherSummary = document.getElementById("weather-summary");
+            const windDirectionText = document.getElementById("wind-direction-text");
+            const windSpeed = document.getElementById("wind-speed");
+            const humidityPercentage = document.getElementById("humidity-percentage");
+            const visibilityDistance = document.getElementById("visibility-distance");
+            const cloudCover = document.getElementById("cloud-cover");
+            const forecastCardsContainer = document.getElementById("forecast-cards-container");
+            const recentSearchesList = document.getElementById("recent-searches-list");
+            const temperatureChartCanvas = document.getElementById("temperatureChart");
+            const temperatureChartCtx = temperatureChartCanvas ? temperatureChartCanvas.getContext("2d") : null;
+            const chartTooltip = document.getElementById("chart-tooltip");
+            const weatherDetailsGrid = document.getElementById("weather-details-grid");
+            const contactForm = document.getElementById("contactForm");
+            const heroBannerCanvas = document.getElementById("hero-banner-canvas");
+            const heroBannerCtx = heroBannerCanvas ? heroBannerCanvas.getContext("2d") : null;
+
+            let errorModalInstance = null;
+            let recentSearches = [];
+            let lastSuccessfulGeoData = null;
+            let lastSuccessfulOneCallData = null;
+            let weatherUpdateIntervalId = null;
+            let chartDataPoints = []; // For temperature chart interactivity
+
+            // Animation variables for hero banner
+            let raindrops = [];
+            let stars = [];
+            let clouds = []; // Store cloud objects for more control
+            let cloudOffset = 0; // Single offset for all clouds
+            let loadedWeatherIcon = null; // To store the loaded weather icon image
+
+            const NUM_STARS = 100;
+            const BASE_NUM_CLOUDS = 3; // Base number of clouds for animation
+            const NUM_RAINDROPS = 50;
+
+            // Initialize Bootstrap Modal if it exists
+            document.addEventListener("DOMContentLoaded", () => {
+                if (document.getElementById("errorModal")) {
+                    errorModalInstance = new bootstrap.Modal(document.getElementById("errorModal"));
+                }
+                // Initial resize for hero banner canvas
+                if (heroBannerCanvas) {
+                    const parentDiv = heroBannerCanvas.parentElement;
+                    heroBannerCanvas.width = parentDiv.offsetWidth;
+                    heroBannerCanvas.height = parentDiv.offsetHeight;
+                }
+            });
+
+            // --- Utility Functions ---
+            function getWeatherIconText(iconCode) {
+                const map = {
+                    "01d": "Cerah",
+                    "01n": "Cerah Malam",
+                    "02d": "Sedikit Berawan",
+                    "02n": "Sedikit Berawan Malam",
+                    "03d": "Berawan Sebagian",
+                    "03n": "Berawan Sebagian",
+                    "04d": "Berawan",
+                    "04n": "Berawan",
+                    "09d": "Hujan Ringan",
+                    "09n": "Hujan Ringan",
+                    "10d": "Hujan",
+                    "10n": "Hujan Malam",
+                    "11d": "Badai Petir",
+                    "11n": "Badai Petir",
+                    "13d": "Salju",
+                    "13n": "Salju",
+                    "50d": "Berkabut",
+                    "50n": "Berkabut",
+                };
+                return map[iconCode] || "Cuaca";
+            }
+
+            function getWindDirection(deg) {
+                if (deg > 337.5 || deg <= 22.5) return "Utara";
+                if (deg > 22.5 && deg <= 67.5) return "Timur Laut";
+                if (deg > 67.5 && deg <= 112.5) return "Timur";
+                if (deg > 112.5 && deg <= 157.5) return "Tenggara";
+                if (deg > 157.5 && deg <= 202.5) return "Selatan";
+                if (deg > 202.5 && deg <= 247.5) return "Barat Daya";
+                if (deg > 247.5 && deg <= 292.5) return "Barat";
+                if (deg > 292.5 && deg <= 337.5) return "Barat Laut";
+                return "Tidak Diketahui";
+            }
+
+            function getDetailIconPath(detailType) {
+                const iconMap = {
+                    pressure: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_141321.svg",
+                    uvi: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143245.svg",
+                    dew_point: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143316.svg",
+                    sunrise: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143341.svg",
+                    sunset: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143358.svg",
+                    moonrise: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143422.svg",
+                    moonset: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143453.svg",
+                    moon_phase: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143511.svg",
+                    wind_gust: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143531.svg",
+                    pop: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143553.svg",
+                    rain: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143616.svg",
+                    snow: "https://www.gamelab.id/uploads/report/project_21678/21678_20250527_143645.svg",
+                };
+                return iconMap[detailType] || "https://placehold.co/90x90/017082/ffffff?text=i";
+            }
+
+            function getMoonPhaseText(phase) {
+                if (phase === 0 || phase === 1) return "Bulan Baru";
+                if (phase > 0 && phase < 0.25) return "Sabit Muda";
+                if (phase === 0.25) return "Kuartal Pertama";
+                if (phase > 0.25 && phase < 0.5) return "Cembung Muda";
+                if (phase === 0.5) return "Purnama";
+                if (phase > 0.5 && phase < 0.75) return "Cembung Tua";
+                if (phase === 0.75) return "Kuartal Ketiga";
+                if (phase > 0.75 && phase < 1) return "Sabit Tua";
+                return "Tidak diketahui";
+            }
+
+            // --- Recent Searches Logic ---
+            function addRecentSearch(location) {
+                const formattedLocation = location
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(" ");
+                recentSearches = recentSearches.filter((item) => item.toLowerCase() !== formattedLocation.toLowerCase());
+                recentSearches.unshift(formattedLocation);
+                if (recentSearches.length > MAX_RECENT_SEARCHES) recentSearches.pop();
+            }
+
+            function renderRecentSearches() {
+                recentSearchesList.innerHTML = "";
+                const defaultFormatted = DEFAULT_LOCATION.split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(" ");
+                if (!recentSearches.some((loc) => loc.toLowerCase() === defaultFormatted.toLowerCase())) {
+                    if (recentSearches.length >= MAX_RECENT_SEARCHES) recentSearches.pop();
+                    recentSearches.unshift(defaultFormatted);
+                }
+
+                recentSearches.forEach((loc) => {
+                    const listItem = document.createElement("li");
+                    listItem.dataset.location = loc;
+                    listItem.textContent = loc;
+                    if (lastSuccessfulGeoData && loc.toLowerCase() === lastSuccessfulGeoData.name.toLowerCase()) {
+                        listItem.classList.add("kota-terpilih");
+                    }
+                    listItem.addEventListener("click", () => {
+                        searchLocationInput.value = loc;
+                        fetchWeather(loc, true);
+                    });
+                    recentSearchesList.appendChild(listItem);
+                });
+            }
+
+            // --- UI Update Functions ---
+            function clearWeatherDisplay() {
+                welcomeMessage.style.display = "block";
+                currentLocationDisplay.textContent = "";
+                currentTimeElement.textContent = "";
+                currentWeatherIcon.src = "https://placehold.co/72x72/01798c/ffffff?text=Icon";
+                currentWeatherIcon.alt = "Memuat ikon cuaca";
+                currentTemp.textContent = "--";
+                weatherDescription.textContent = "Memuat...";
+                feelsLikeTemp.textContent = "--";
+                currentWeatherIcon.style.display = "none"; // Hide icon when clearing
+                weatherSummary.textContent = "";
+                windDirectionText.textContent = "--";
+                windSpeed.innerHTML = "-- <span>km/jam</span>";
+                humidityPercentage.textContent = "--%";
+                visibilityDistance.textContent = "-- KM";
+                cloudCover.textContent = "--%";
+                forecastCardsContainer.innerHTML = "";
+                if (temperatureChartCtx) drawTemperatureChart([], [], 0);
+                if (weatherDetailsGrid) weatherDetailsGrid.innerHTML = '<div class="col-12 text-center text-white-50">Data detail tidak tersedia.</div>';
+                chartDataPoints = [];
+                if (heroBannerCtx) {
+                    heroBannerCtx.clearRect(0, 0, heroBannerCanvas.width, heroBannerCanvas.height);
+                }
+                loadedWeatherIcon = null; // Clear loaded icon
+            }
+
+            function showLoading(show) {
+                loadingSpinner.style.display = show ? "block" : "none";
+                if (show) {
+                    errorMessage.style.display = "none";
+                    searchErrorMessage.style.display = "none";
+                    welcomeMessage.style.display = "none"; // Hide welcome message when loading
+                    currentLocationDisplay.textContent = ""; // Clear location display during loading
+                }
+            }
+
+            function displayMainError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = "block";
+                welcomeMessage.style.display = "none"; // Hide welcome message on error
+                currentLocationDisplay.textContent = ""; // Clear location display on error
+            }
+
+            function displaySearchError(message, showAsModal = false) {
+                if (showAsModal && errorModalInstance) {
+                    document.getElementById("errorModalBody").textContent = message;
+                    errorModalInstance.show();
+                    searchErrorMessage.style.display = "none";
+                } else {
+                    searchErrorMessage.textContent = message;
+                    searchErrorMessage.style.display = "block";
+                    if (errorModalInstance) errorModalInstance.hide();
+                }
+            }
+
+            function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
+                welcomeMessage.style.display = "none";
+                currentLocationDisplay.textContent = dataGeografis.name + ", " + dataGeografis.country;
+                const current = oneCallData.current;
+                const timezoneOffset = oneCallData.timezone_offset;
+                const date = new Date((current.dt + timezoneOffset) * 1000);
+                currentTimeElement.textContent = date.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" });
+                const iconCode = current.weather[0].icon;
+                const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+                currentWeatherIcon.src = iconUrl;
+                currentWeatherIcon.alt = getWeatherIconText(iconCode);
+                currentWeatherIcon.style.display = "block"; // Show icon after loading
+                currentTemp.textContent = current.temp.toFixed(1);
+                weatherDescription.textContent = current.weather[0].description.charAt(0).toUpperCase() + current.weather[0].description.slice(1);
+                feelsLikeTemp.textContent = current.feels_like.toFixed(1);
+                const todayForecast = oneCallData.daily[0];
+                if (todayForecast && todayForecast.temp) {
+                    weatherSummary.textContent = "Langit diperkirakan " + current.weather[0].description + ". Suhu tertinggi akan mencapai " + todayForecast.temp.max.toFixed(1) + "°C.";
+                } else {
+                    weatherSummary.textContent = "Langit diperkirakan " + current.weather[0].description + ".";
+                }
+                windDirectionText.textContent = getWindDirection(current.wind_deg);
+                windSpeed.innerHTML = (current.wind_speed * 3.6).toFixed(1) + " <span>km/jam</span>";
+                humidityPercentage.textContent = current.humidity + "%";
+                visibilityDistance.textContent = (current.visibility / 1000).toFixed(1) + " KM";
+                cloudCover.textContent = current.clouds + "%";
+
+                // Load weather icon for banner
+                const newWeatherIcon = new Image();
+                newWeatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+                newWeatherIcon.onload = () => {
+                    loadedWeatherIcon = newWeatherIcon;
+                    // Only draw animation AFTER the icon is loaded
+                    const currentHour = date.getUTCHours();
+                    const weatherMain = current.weather[0].main;
+                    const cloudsPercentage = current.clouds;
+                    drawHeroBannerAnimation(
+                        currentHour,
+                        weatherMain,
+                        current.temp,
+                        weatherDescription.textContent,
+                        feelsLikeTemp.textContent,
+                        humidityPercentage.textContent,
+                        windSpeed.textContent,
+                        loadedWeatherIcon,
+                        cloudsPercentage,
+                        dataGeografis.name,
+                        dataGeografis.country
+                    );
+                };
+                newWeatherIcon.onerror = () => {
+                    console.error(`Failed to load weather icon for code: ${iconCode}`);
+                    loadedWeatherIcon = null;
+                    // Draw animation even if icon fails to load, but pass null for icon
+                    const currentHour = date.getUTCHours();
+                    const weatherMain = current.weather[0].main;
+                    const cloudsPercentage = current.clouds;
+                    drawHeroBannerAnimation(
+                        currentHour,
+                        weatherMain,
+                        current.temp,
+                        weatherDescription.textContent,
+                        feelsLikeTemp.textContent,
+                        humidityPercentage.textContent,
+                        windSpeed.textContent,
+                        null,
+                        cloudsPercentage,
+                        dataGeografis.name,
+                        dataGeografis.country
+                    );
+                };
+            }
+
+            function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSeconds) {
+                if (!temperatureChartCtx) return;
+                temperatureChartCanvas.width = temperatureChartCanvas.offsetWidth;
+                temperatureChartCanvas.height = temperatureChartCanvas.offsetHeight > 0 ? temperatureChartCanvas.offsetHeight : 250; // Ensure height is positive
+                temperatureChartCtx.clearRect(0, 0, temperatureChartCanvas.width, temperatureChartCanvas.height);
+
+                const temperatures = dailyTempsData.map((dayTemp) => dayTemp.max);
+                const timestamps = dailyTimestamps;
+
+                if (temperatures.length === 0 || timestamps.length === 0) {
+                    chartDataPoints = [];
+                    temperatureChartCtx.fillStyle = "rgba(255,255,255,0.7)";
+                    temperatureChartCtx.font = "14px Outfit";
+                    temperatureChartCtx.textAlign = "center";
+                    temperatureChartCtx.fillText("Data prakiraan tidak tersedia untuk grafik.", temperatureChartCanvas.width / 2, temperatureChartCanvas.height / 2);
+                    return;
+                }
+
+                const padding = 40;
+                const chartWidth = temperatureChartCanvas.width - 2 * padding;
+                const chartHeight = temperatureChartCanvas.height - 2 * padding;
+                if (chartWidth <= 0 || chartHeight <= 0) return; // Not enough space to draw
+
+                const minTemp = Math.min(...temperatures);
+                const maxTemp = Math.max(...temperatures);
+                const tempRange = maxTemp - minTemp;
+                const yAxisMin = Math.floor(minTemp - (tempRange * 0.1 || 2));
+                const yAxisMax = Math.ceil(maxTemp + (tempRange * 0.1 || 2));
+                const displayTempRange = yAxisMax - yAxisMin || 1;
+                chartDataPoints = [];
+
+                temperatureChartCtx.fillStyle = "white";
+                temperatureChartCtx.font = "10px Outfit";
+                temperatureChartCtx.textAlign = "right";
+                temperatureChartCtx.textBaseline = "middle";
+                const numYLabels = 5;
+                for (let i = 0; i <= numYLabels; i++) {
+                    const y = padding + chartHeight - (i / numYLabels) * chartHeight;
+                    const tempValue = yAxisMin + (i / numYLabels) * displayTempRange;
+                    temperatureChartCtx.fillText(tempValue.toFixed(0) + "°C", padding - 8, y);
+                    temperatureChartCtx.beginPath();
+                    temperatureChartCtx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+                    temperatureChartCtx.lineWidth = 0.5;
+                    temperatureChartCtx.moveTo(padding, y);
+                    temperatureChartCtx.lineTo(padding + chartWidth, y);
+                    temperatureChartCtx.stroke();
+                }
+
+                temperatureChartCtx.textAlign = "center";
+                temperatureChartCtx.textBaseline = "top";
+                temperatureChartCtx.font = "10px Outfit";
+                const numXPoints = Math.min(timestamps.length, 7);
+                for (let i = 0; i < numXPoints; i++) {
+                    const x = padding + (i / (numXPoints - 1 || 1)) * chartWidth;
+                    const localDate = new Date((timestamps[i] + timezoneOffsetSeconds) * 1000);
+                    const dayName = localDate.toLocaleDateString("id-ID", { weekday: "short", timeZone: "UTC" });
+                    temperatureChartCtx.fillText(dayName, x, padding + chartHeight + 5);
+                    chartDataPoints.push({
+                        x: x,
+                        y: padding + chartHeight - ((temperatures[i] - yAxisMin) / displayTempRange) * chartHeight,
+                        temp: temperatures[i],
+                        timestamp: timestamps[i],
+                        timezoneOffset: timezoneOffsetSeconds,
+                    });
+                }
+
+                temperatureChartCtx.beginPath();
+                temperatureChartCtx.strokeStyle = "#EFB619";
+                temperatureChartCtx.lineWidth = 2.5;
+                heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Apply shadow to the line
+                heroBannerCtx.shadowBlur = 5;
+                heroBannerCtx.shadowOffsetY = 2;
+                for (let i = 0; i < chartDataPoints.length; i++) {
+                    const point = chartDataPoints[i];
+                    if (i === 0) temperatureChartCtx.moveTo(point.x, point.y);
+                    else temperatureChartCtx.lineTo(point.x, point.y);
+                }
+                temperatureChartCtx.stroke();
+                heroBannerCtx.shadowColor = "transparent"; // Reset shadow after drawing
+                temperatureChartCtx.fillStyle = "#EFB619";
+                for (let i = 0; i < chartDataPoints.length; i++) {
+                    const point = chartDataPoints[i];
+                    temperatureChartCtx.beginPath();
+                    temperatureChartCtx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                    temperatureChartCtx.fill();
+                }
+            }
+
+            function updateForecastDisplay(oneCallData) {
+                forecastCardsContainer.innerHTML = "";
+                const dailyForecasts = oneCallData.daily;
+                const timezoneOffset = oneCallData.timezone_offset;
+                const chartDailyTemps = dailyForecasts.slice(0, 7).map((day) => day.temp);
+                const chartDailyTimestamps = dailyForecasts.slice(0, 7).map((day) => day.dt);
+                if (temperatureChartCtx) drawTemperatureChart(chartDailyTemps, chartDailyTimestamps, timezoneOffset);
+
+                const todayFull = new Date((Date.now() / 1000 + timezoneOffset) * 1000).toISOString().split("T")[0];
+                let forecastCount = 0;
+                for (let i = 0; i < dailyForecasts.length; i++) {
+                    const dayData = dailyForecasts[i];
+                    const localDate = new Date((dayData.dt + timezoneOffset) * 1000);
+                    const dateKey = localDate.toISOString().split("T")[0];
+                    if (dateKey === todayFull && dailyForecasts.length > 1) continue;
+                    if (forecastCount >= 5) break;
+
+                    const minTemp = dayData.temp.min.toFixed(1);
+                    const maxTemp = dayData.temp.max.toFixed(1);
+                    const iconCode = dayData.weather[0].icon;
+                    const iconText = getWeatherIconText(iconCode);
+                    const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+                    let displayDay = localDate.toLocaleDateString("id-ID", { weekday: "long", timeZone: "UTC" });
+                    const tomorrow = new Date((Date.now() / 1000 + timezoneOffset + 86400) * 1000);
+                    if (dateKey === tomorrow.toISOString().split("T")[0]) displayDay = "Besok";
+
+                    const forecastCard =
+                        "<div class='col'><div class='bg-3 rounded-2 p-3 text-center h-100 d-flex flex-column justify-content-between'><div class='fw-semibold' style='font-size: 0.95rem;'>" +
+                        displayDay +
+                        "</div><img src='" +
+                        iconUrl +
+                        "' width='120px' alt='" +
+                        iconText +
+                        "' class='mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/120x120/01798c/ffffff?text=" +
+                        encodeURIComponent(iconText) +
+                        "'; this.alt='" +
+                        iconText +
+                        "';><div style='font-size: 0.9rem;'>" +
+                        maxTemp +
+                        "° / " +
+                        minTemp +
+                        "°C</div></div></div>";
+                    forecastCardsContainer.insertAdjacentHTML("beforeend", forecastCard);
+                    forecastCount++;
+                }
+            }
+
+            function updateWeatherDetailsDisplay(oneCallData, timezoneOffsetSeconds) {
+                if (!weatherDetailsGrid) return;
+                weatherDetailsGrid.innerHTML = "";
+                const current = oneCallData.current;
+                const today = oneCallData.daily[0];
+                const details = [
+                    { label: "Tekanan Udara", value: current.pressure + " hPa", type: "pressure" },
+                    { label: "Indeks UV", value: current.uvi, type: "uvi" },
+                    { label: "Titik Embun", value: current.dew_point.toFixed(1) + " °C", type: "dew_point" },
+                    { label: "Hembusan Angin", value: current.wind_gust ? (current.wind_gust * 3.6).toFixed(1) + " km/j" : "--", type: "wind_gust" },
+                    { label: "Terbit Matahari", value: new Date((today.sunrise + timezoneOffsetSeconds) * 1000).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }), type: "sunrise" },
+                    { label: "Terbenam Matahari", value: new Date((today.sunset + timezoneOffsetSeconds) * 1000).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }), type: "sunset" },
+                    { label: "Terbit Bulan", value: new Date((today.moonrise + timezoneOffsetSeconds) * 1000).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }), type: "moonrise" },
+                    { label: "Terbenam Bulan", value: new Date((today.moonset + timezoneOffsetSeconds) * 1000).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" }), type: "moonset" },
+                    { label: "Fase Bulan", value: getMoonPhaseText(today.moon_phase), type: "moon_phase" },
+                    { label: "Peluang Presipitasi", value: (today.pop * 100).toFixed(0) + "%", type: "pop" },
+                    { label: "Volume Hujan", value: today.rain ? today.rain + " mm" : "0 mm", type: "rain" },
+                    { label: "Volume Salju", value: today.snow ? today.snow + " mm" : "0 mm", type: "snow" },
+                ];
+                details.forEach((detail) => {
+                    const col = document.createElement("div");
+                    col.className = "col";
+                    const card =
+                        "<div class='weather-detail-card'><img src='" +
+                        getDetailIconPath(detail.type) +
+                        "' alt='" +
+                        detail.label +
+                        "' class='detail-icon mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/90x90/017082/ffffff?text=i'; this.alt='ikon " +
+                        detail.label +
+                        "'; /><div><div class='detail-label'>" +
+                        detail.label +
+                        "</div><div class='detail-value'>" +
+                        (detail.value !== undefined ? detail.value : "--") +
+                        "</div></div></div>";
+                    col.innerHTML = card;
+                    weatherDetailsGrid.appendChild(col);
+                });
+            }
+
+            // --- Hero Banner Animation Logic ---
+            let animationFrameId = null; // To store the animation frame ID for cancellation
+
+            function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, weatherDescriptionText, feelsLikeTemperature, humidityPercentage, windSpeedText, weatherIconImage, cloudsPercentage, cityName, countryName) {
+                if (!heroBannerCtx) return;
+
+                const width = heroBannerCanvas.width;
+                const height = 720;
+
+                // Clear canvas
+                heroBannerCtx.clearRect(0, 0, width, height);
+
+                // Define colors from the app's palette
+                const color1 = "#00424c"; // Dark Teal
+                const color2 = "#015f6e"; // Medium Teal
+                const color3 = "#017082"; // Slightly lighter teal (from search card)
+                const color4 = "#01798c"; // Lighter Teal (bg-4)
+                const color5 = "#efb619"; // Gold/Yellow
+
+                // Draw ground
+                heroBannerCtx.fillStyle = color2; // Use a medium teal for the ground
+                heroBannerCtx.fillRect(0, height * 0.75, width, height * 0.25); // Make ground slightly flatter
+
+                // Draw hill (more subtle, using app colors)
+                heroBannerCtx.beginPath();
+                heroBannerCtx.arc(width / 2, height * 0.75, width * 0.6, 0, Math.PI, true);
+                heroBannerCtx.closePath();
+                heroBannerCtx.fillStyle = color3; // Use a slightly lighter teal for the hill
+                heroBannerCtx.fill();
+
+                // Determine time of day and sky color
+                let skyColorTop, skyColorBottom;
+                let isDay = true;
+                if (currentHour >= 6 && currentHour < 12) {
+                    // Morning (Sunrise/Daybreak)
+                    skyColorTop = "#87CEEB"; // Light blue
+                    skyColorBottom = color4; // Lighter Teal
+                } else if (currentHour >= 12 && currentHour < 18) {
+                    // Afternoon (Midday)
+                    skyColorTop = "#00BFFF"; // Deep sky blue
+                    skyColorBottom = color4; // Lighter Teal
+                } else if (currentHour >= 18 && currentHour < 21) {
+                    // Evening (Sunset)
+                    skyColorTop = color5; // Gold
+                    skyColorBottom = color1; // Dark Teal
+                    isDay = false;
+                } else {
+                    // Night
+                    skyColorTop = color1; // Dark Teal
+                    skyColorBottom = color2; // Medium Teal
+                    isDay = false;
+                }
+
+                // Draw sky gradient
+                const skyGradient = heroBannerCtx.createLinearGradient(0, 0, 0, height * 0.75);
+                skyGradient.addColorStop(0, skyColorTop);
+                skyGradient.addColorStop(1, skyColorBottom);
+                heroBannerCtx.fillStyle = skyGradient;
+                heroBannerCtx.fillRect(0, 0, width, height * 0.75);
+
+                // Draw sun/moon based on time of day
+                if (isDay) {
+                    // Sun with a glow
+                    const sunX = width * 0.8;
+                    const sunY = height * 0.2;
+                    const sunRadius = 50;
+
+                    // Radial gradient for glow
+                    const sunGlow = heroBannerCtx.createRadialGradient(sunX, sunY, sunRadius * 0.8, sunX, sunY, sunRadius * 1.5);
+                    sunGlow.addColorStop(0, "rgba(255, 215, 0, 0.8)"); // Gold with opacity
+                    sunGlow.addColorStop(1, "rgba(255, 215, 0, 0)"); // Transparent gold
+                    heroBannerCtx.fillStyle = sunGlow;
+                    heroBannerCtx.beginPath();
+                    heroBannerCtx.arc(sunX, sunY, sunRadius * 1.5, 0, Math.PI * 2);
+                    heroBannerCtx.fill();
+
+                    // Solid sun disc
+                    heroBannerCtx.beginPath();
+                    heroBannerCtx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+                    heroBannerCtx.fillStyle = color5; // Gold
+                    heroBannerCtx.fill();
+                } else {
+                    // Moon with a subtle glow
+                    const moonX = width * 0.8;
+                    const moonY = height * 0.2;
+                    const moonRadius = 40;
+
+                    // Radial gradient for glow
+                    const moonGlow = heroBannerCtx.createRadialGradient(moonX, moonY, moonRadius * 0.8, moonX, moonY, moonRadius * 1.2);
+                    moonGlow.addColorStop(0, "rgba(240, 230, 140, 0.6)"); // Khaki with opacity
+                    moonGlow.addColorStop(1, "rgba(240, 230, 140, 0)"); // Transparent khaki
+                    heroBannerCtx.fillStyle = moonGlow;
+                    heroBannerCtx.beginPath();
+                    heroBannerCtx.arc(moonX, moonY, moonRadius * 1.2, 0, Math.PI * 2);
+                    heroBannerCtx.fill();
+
+                    // Solid moon disc
+                    heroBannerCtx.beginPath();
+                    heroBannerCtx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
+                    heroBannerCtx.fillStyle = "#F0E68C"; // Khaki
+                    heroBannerCtx.fill();
+
+                    // Crescent effect (draw a circle to "cut out" a crescent)
+                    heroBannerCtx.beginPath();
+                    heroBannerCtx.arc(moonX - 15, moonY - 15, moonRadius, 0, Math.PI * 2);
+                    heroBannerCtx.fillStyle = skyColorTop; // Match sky color to hide part of the moon
+                    heroBannerCtx.fill();
+
+                    // Stars
+                    if (stars.length === 0) {
+                        for (let i = 0; i < NUM_STARS; i++) {
+                            stars.push({
+                                x: Math.random() * width,
+                                y: Math.random() * height * 0.6,
+                                radius: Math.random() * 1.5 + 0.5,
+                                opacity: Math.random() * 0.5 + 0.5,
+                                twinkleSpeed: Math.random() * 0.05 + 0.01,
+                            });
+                        }
+                    }
+                    stars.forEach((star) => {
+                        heroBannerCtx.beginPath();
+                        heroBannerCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                        heroBannerCtx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+                        heroBannerCtx.fill();
+                        star.opacity += star.twinkleSpeed;
+                        if (star.opacity > 1 || star.opacity < 0.5) {
+                            star.twinkleSpeed *= -1;
+                        }
+                    });
+                }
+
+                // Manage clouds based on cloud cover
+                const targetNumClouds = Math.round((cloudsPercentage / 25) * BASE_NUM_CLOUDS); // Scale clouds based on percentage (0-100)
+                if (clouds.length < targetNumClouds) {
+                    // Add new clouds if needed
+                    for (let i = clouds.length; i < targetNumClouds; i++) {
+                        clouds.push({
+                            x: Math.random() * width,
+                            y: Math.random() * height * 0.4,
+                            size: Math.random() * 0.5 + 0.5, // Scale factor for cloud size
+                            speed: (Math.random() * 0.5 + 0.2) * (Math.random() > 0.5 ? 1 : -1), // Random speed and direction
+                        });
+                    }
+                } else if (clouds.length > targetNumClouds) {
+                    // Remove excess clouds
+                    clouds = clouds.slice(0, targetNumClouds);
+                }
+
+                // Draw and animate clouds
+                clouds.forEach((cloud) => {
+                    let cloudColor = "rgba(240, 248, 255, 0.7)"; // Default light, semi-transparent
+                    if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
+                        cloudColor = "rgba(105, 105, 105, 0.9)"; // Darker, less transparent for rain
+                    } else if (weatherMain === "Fog" || weatherMain === "Mist" || weatherMain === "Haze") {
+                        cloudColor = "rgba(200, 200, 200, 0.8)"; // Gray, more opaque for fog
+                    } else if (weatherMain === "Clouds") {
+                        cloudColor = `rgba(240, 248, 255, ${0.4 + (cloudsPercentage / 100) * 0.5})`; // Opacity based on percentage
+                    } else if (isDay) {
+                        cloudColor = "rgba(240, 248, 255, 0.3)"; // Very light, transparent clouds
+                    }
+
+                    drawCloud(heroBannerCtx, cloud.x, cloud.y, cloudColor, cloud.size);
+                    cloud.x += cloud.speed;
+                    // Loop clouds around the canvas
+                    if (cloud.speed > 0 && cloud.x > width + 100) {
+                        cloud.x = -150;
+                        cloud.y = Math.random() * height * 0.4; // Randomize y for new entry
+                    } else if (cloud.speed < 0 && cloud.x < -150) {
+                        cloud.x = width + 100;
+                        cloud.y = Math.random() * height * 0.4; // Randomize y for new entry
+                    }
+                });
+
+                // Draw rain/thunderstorm effects
+                if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
+                    if (raindrops.length === 0) {
+                        for (let i = 0; i < NUM_RAINDROPS; i++) {
+                            raindrops.push({
+                                x: Math.random() * width,
+                                y: Math.random() * height * 0.7,
+                                length: Math.random() * 10 + 5,
+                                speed: Math.random() * 5 + 3,
+                            });
+                        }
+                    }
+
+                    raindrops.forEach((drop) => {
+                        heroBannerCtx.beginPath();
+                        heroBannerCtx.moveTo(drop.x, drop.y);
+                        heroBannerCtx.lineTo(drop.x, drop.y + drop.length);
+                        heroBannerCtx.strokeStyle = "rgba(173, 216, 230, 0.8)"; // LightBlue with opacity
+                        heroBannerCtx.lineWidth = 2;
+                        heroBannerCtx.stroke();
+
+                        drop.y += drop.speed;
+                        if (drop.y > height * 0.7) {
+                            drop.y = -drop.length;
+                            drop.x = Math.random() * width;
+                        }
+                    });
+
+                    if (weatherMain === "Thunderstorm") {
+                        // Simple lightning effect
+                        if (Math.random() < 0.01) {
+                            // 1% chance per frame
+                            heroBannerCtx.beginPath();
+                            heroBannerCtx.moveTo(width * 0.4 + Math.random() * width * 0.2, 0);
+                            heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.3);
+                            heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.2);
+                            heroBannerCtx.lineTo(width * 0.5 + Math.random() * width * 0.1, height * 0.6);
+                            heroBannerCtx.strokeStyle = "#FFFF00"; // Yellow
+                            heroBannerCtx.lineWidth = 3;
+                            heroBannerCtx.stroke();
+                        }
+                    }
+                } else {
+                    raindrops = []; // Clear raindrops if not raining
+                }
+
+                // Draw Weather Icon (top-left)
+                if (weatherIconImage && weatherIconImage.complete) {
+                    const iconSize = 72;
+                    const iconX = width * 0.1;
+                    const iconY = height * 0.2;
+                    heroBannerCtx.drawImage(weatherIconImage, iconX, iconY, iconSize, iconSize);
+                }
+
+                // Draw Temperature (next to icon)
+                if (currentTemperature !== undefined && currentTemperature !== null) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "bold 48px Outfit";
+                    heroBannerCtx.textAlign = "left";
+                    heroBannerCtx.textBaseline = "middle";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)"; // Add shadow for better readability
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(`${currentTemperature.toFixed(1)}°C`, width * 0.1 + 80, height * 0.2 + 36); // Position next to icon
+                    heroBannerCtx.shadowColor = "transparent"; // Reset shadow
+                }
+
+                // Draw Weather Description (below temperature)
+                if (weatherDescriptionText) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "24px Outfit";
+                    heroBannerCtx.textAlign = "left";
+                    heroBannerCtx.textBaseline = "top";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(weatherDescriptionText, width * 0.1, height * 0.2 + 80); // Position below icon/temp
+                    heroBannerCtx.shadowColor = "transparent";
+                }
+
+                // Draw Feels Like Temperature (below description)
+                if (feelsLikeTemperature) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "18px Outfit";
+                    heroBannerCtx.textAlign = "left";
+                    heroBannerCtx.textBaseline = "top";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(`Terasa seperti ${feelsLikeTemperature}°`, width * 0.1, height * 0.2 + 120);
+                    heroBannerCtx.shadowColor = "transparent";
+                }
+
+                // Draw Humidity (below feels like)
+                if (humidityPercentage) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "18px Outfit";
+                    heroBannerCtx.textAlign = "left";
+                    heroBannerCtx.textBaseline = "top";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(`Kelembapan: ${humidityPercentage}`, width * 0.1, height * 0.2 + 150);
+                    heroBannerCtx.shadowColor = "transparent";
+                }
+
+                // Draw Wind Speed (below humidity)
+                if (windSpeedText) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "18px Outfit";
+                    heroBannerCtx.textAlign = "left";
+                    heroBannerCtx.textBaseline = "top";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(`Angin: ${windSpeedText}`, width * 0.1, height * 0.2 + 180);
+                    heroBannerCtx.shadowColor = "transparent";
+                }
+
+                // Draw City Name and Country (bottom left, adjusted for new layout)
+                if (cityName && countryName) {
+                    heroBannerCtx.fillStyle = "white";
+                    heroBannerCtx.font = "bold 24px Outfit";
+                    heroBannerCtx.textAlign = "left"; // Align to left
+                    heroBannerCtx.textBaseline = "bottom";
+                    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                    heroBannerCtx.shadowBlur = 5;
+                    heroBannerCtx.shadowOffsetX = 2;
+                    heroBannerCtx.shadowOffsetY = 2;
+                    heroBannerCtx.fillText(`${cityName}, ${countryName}`, width * 0.1, height - 20); // Position at bottom left with padding
+                    heroBannerCtx.shadowColor = "transparent";
+                }
+
+                // Request next animation frame
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId); // Cancel previous frame to prevent multiple loops
+                }
+                animationFrameId = requestAnimationFrame(() =>
+                    drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, weatherDescriptionText, feelsLikeTemperature, humidityPercentage, windSpeedText, weatherIconImage, cloudsPercentage, cityName, countryName)
+                );
+            }
+
+            // Helper function to draw a cloud (more stylized)
+            function drawCloud(ctx, x, y, color, size = 1) {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, 25 * size, 0, Math.PI * 2);
+                ctx.arc(x + 35 * size, y, 30 * size, 0, Math.PI * 2);
+                ctx.arc(x + 70 * size, y, 28 * size, 0, Math.PI * 2);
+                ctx.arc(x + 15 * size, y + 15 * size, 27 * size, 0, Math.PI * 2);
+                ctx.arc(x + 55 * size, y + 15 * size, 32 * size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // --- API Fetching Logic ---
+            async function getGeoCoordinates(locationName) {
+                const geoResponse = await fetch(GEO_BASE_URL + "?q=" + encodeURIComponent(locationName) + "&limit=1&appid=" + OPENWEATHER_API_KEY);
+                if (!geoResponse.ok) throw new Error("Gagal geocoding (Status: " + geoResponse.status + ")");
+                const geoDataArray = await geoResponse.json();
+                if (geoDataArray.length === 0) throw new Error("Lokasi '" + locationName + "' tidak ditemukan.");
+                const firstGeoData = geoDataArray[0];
+                return { name: firstGeoData.name, country: firstGeoData.country, lat: firstGeoData.lat, lon: firstGeoData.lon };
+            }
+
+            async function getOpenWeatherData(lat, lon) {
+                const oneCallResponse = await fetch(ONE_CALL_BASE_URL + "?lat=" + lat + "&lon=" + lon + "&appid=" + OPENWEATHER_API_KEY + "&units=metric&lang=id&exclude=minutely,alerts");
+                if (!oneCallResponse.ok) throw new Error("Gagal mengambil data cuaca (Status: " + oneCallResponse.status + ")");
+                return await oneCallResponse.json();
+            }
+
+            async function fetchWeather(locationNameToFetch, isManualSearch = false) {
+                showLoading(true);
+                errorMessage.style.display = "none";
+                if (OPENWEATHER_API_KEY === "") {
+                    // Check if API key is truly empty
+                    displayMainError("Kunci API OpenWeatherMap belum dikonfigurasi. Silakan tambahkan kunci API Anda.");
+                    showLoading(false);
+                    return;
+                }
+
+                let geoDataToUse = null;
+                let effectiveLocationName = locationNameToFetch;
+                try {
+                    if (locationNameToFetch) {
+                        geoDataToUse = await getGeoCoordinates(locationNameToFetch);
+                        effectiveLocationName = geoDataToUse.name;
+                    } else if (lastSuccessfulGeoData) {
+                        geoDataToUse = lastSuccessfulGeoData;
+                        effectiveLocationName = geoDataToUse.name;
+                    } else {
+                        effectiveLocationName = DEFAULT_LOCATION;
+                        geoDataToUse = await getGeoCoordinates(effectiveLocationName);
+                    }
+                    const weatherData = await getOpenWeatherData(geoDataToUse.lat, geoDataToUse.lon);
+                    searchErrorMessage.style.display = "none";
+                    if (errorModalInstance) errorModalInstance.hide();
+                    updateCurrentWeatherDisplay(weatherData, geoDataToUse);
+                    updateForecastDisplay(weatherData);
+                    updateWeatherDetailsDisplay(weatherData, weatherData.timezone_offset);
+                    if (isManualSearch) {
+                        addRecentSearch(geoDataToUse.name);
+                        searchLocationInput.value = "";
+                    }
+                    lastSuccessfulGeoData = geoDataToUse;
+                    lastSuccessfulOneCallData = weatherData;
+                    renderRecentSearches();
+                } catch (error) {
+                    console.error("Error fetching weather for '" + effectiveLocationName || "lokasi terakhir" + "':", error);
+                    const friendlyErrorMessage =
+                        error.message.includes("tidak ditemukan") || error.message.includes("Gagal geocoding") ? error.message : "Gagal memuat data untuk " + effectiveLocationName || "lokasi terakhir" + ". Periksa koneksi atau coba lagi.";
+                    if (isManualSearch) displaySearchError(friendlyErrorMessage, true);
+                    else displayMainError(friendlyErrorMessage);
+
+                    if (lastSuccessfulOneCallData && lastSuccessfulGeoData && !isManualSearch) {
+                        updateCurrentWeatherDisplay(lastSuccessfulOneCallData, lastSuccessfulGeoData);
+                        updateForecastDisplay(lastSuccessfulOneCallData);
+                        updateWeatherDetailsDisplay(lastSuccessfulOneCallData, lastSuccessfulOneCallData.timezone_offset);
+                        renderRecentSearches();
+                    } else if (!lastSuccessfulOneCallData && !lastSuccessfulGeoData) {
+                        clearWeatherDisplay();
+                        if (weatherDetailsGrid) weatherDetailsGrid.innerHTML = '<div class="col-12 text-center text-white-50">Data detail tidak tersedia.</div>';
+                    }
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // --- Event Listeners ---
+            if (searchButton) {
+                searchButton.addEventListener("click", () => {
+                    const location = searchLocationInput.value.trim();
+                    if (location) fetchWeather(location, true);
+                    else displaySearchError("Silakan masukkan nama lokasi.", false);
+                });
+            }
+
+            if (searchLocationInput) {
+                searchLocationInput.addEventListener("keyup", (event) => {
+                    if (event.key === "Enter") searchButton.click();
+                });
+            }
+
+            if (temperatureChartCanvas) {
+                temperatureChartCanvas.addEventListener("mousemove", (e) => {
+                    if (!chartDataPoints || chartDataPoints.length === 0) return;
+                    const rect = temperatureChartCanvas.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+                    let closestPoint = null;
+                    let minDist = Infinity;
+                    const hoverThreshold = 15; // pixels
+
+                    for (const point of chartDataPoints) {
+                        const dist = Math.sqrt(Math.pow(mouseX - point.x, 2) + Math.pow(mouseY - point.y, 2));
+                        if (dist < minDist && dist < hoverThreshold) {
+                            minDist = dist;
+                            closestPoint = point;
+                        }
+                    }
+
+                    if (closestPoint) {
+                        chartTooltip.style.display = "block";
+                        const localDate = new Date((closestPoint.timestamp + closestPoint.timezoneOffset) * 1000);
+                        const formattedDate = localDate.toLocaleDateString("id-ID", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+                        chartTooltip.innerHTML = closestPoint.temp.toFixed(1) + "°C<br>" + formattedDate;
+                        let tooltipLeft = e.clientX - chartTooltip.offsetWidth / 2;
+                        let tooltipTop = e.clientY - chartTooltip.offsetHeight - 15;
+                        if (tooltipLeft < 5) tooltipLeft = 5;
+                        if (tooltipLeft + chartTooltip.offsetWidth > window.innerWidth - 5) tooltipLeft = window.innerWidth - chartTooltip.offsetWidth - 5;
+                        if (tooltipTop < 5) tooltipTop = e.clientY + 15;
+                        if (tooltipTop + chartTooltip.offsetHeight > window.innerHeight - 5) tooltipTop = window.innerHeight - chartTooltip.offsetHeight - 5;
+                        chartTooltip.style.left = tooltipLeft + "px";
+                        chartTooltip.style.top = tooltipTop + "px";
+                    } else {
+                        chartTooltip.style.display = "none";
+                    }
+                });
+                temperatureChartCanvas.addEventListener("mouseout", () => {
+                    chartTooltip.style.display = "none";
+                });
+            }
+
+            if (contactForm) {
+                contactForm.addEventListener("submit", function (event) {
+                    event.preventDefault();
+                    const fullName = document.getElementById("contactFullName").value;
+                    const email = document.getElementById("contactEmail").value;
+                    const subject = document.getElementById("contactSubject").value;
+                    const message = document.getElementById("contactMessage").value;
+                    if (fullName && email && subject && message) {
+                        if (errorModalInstance) {
+                            document.getElementById("errorModalLabel").textContent = "Pesan Terkirim!";
+                            document.getElementById("errorModalBody").textContent = "Terima kasih telah menghubungi kami. Pesan Anda telah berhasil dikirim.";
+                            errorModalInstance.show();
+                        }
+                        contactForm.reset();
+                    } else {
+                        if (errorModalInstance) {
+                            document.getElementById("errorModalLabel").textContent = "Form Tidak Lengkap";
+                            document.getElementById("errorModalBody").textContent = "Mohon lengkapi semua field yang wajib diisi.";
+                            errorModalInstance.show();
+                        }
+                    }
+                });
+            }
+
+            // --- Initial Load and Interval ---
+            document.addEventListener("DOMContentLoaded", () => {
+                renderRecentSearches();
+                fetchWeather(DEFAULT_LOCATION, true); // Fetch for default on load
+
+                if (weatherUpdateIntervalId) clearInterval(weatherUpdateIntervalId);
+                weatherUpdateIntervalId = setInterval(() => {
+                    const locationToUpdate = lastSuccessfulGeoData ? lastSuccessfulGeoData.name : DEFAULT_LOCATION;
+                    fetchWeather(locationToUpdate, false); // Auto-refresh without treating as manual search
+                }, 5 * 60 * 1000); // Refresh every 5 minutes
+
+                window.addEventListener("resize", () => {
+                    // Resize hero banner canvas
+                    if (heroBannerCanvas) {
+                        const parentDiv = heroBannerCanvas.parentElement;
+                        heroBannerCanvas.width = parentDiv.offsetWidth;
+                        heroBannerCanvas.height = parentDiv.offsetHeight;
+                        // Redraw hero banner if data is available
+                        if (lastSuccessfulOneCallData) {
+                            const currentHour = new Date((lastSuccessfulOneCallData.current.dt + lastSuccessfulOneCallData.timezone_offset) * 1000).getUTCHours();
+                            const weatherMain = lastSuccessfulOneCallData.current.weather[0].main;
+                            const cloudsPercentage = lastSuccessfulOneCallData.current.clouds;
+                            drawHeroBannerAnimation(
+                                currentHour,
+                                weatherMain,
+                                lastSuccessfulOneCallData.current.temp,
+                                weatherDescription.textContent,
+                                feelsLikeTemp.textContent,
+                                humidityPercentage.textContent,
+                                windSpeed.textContent,
+                                loadedWeatherIcon,
+                                cloudsPercentage,
+                                lastSuccessfulGeoData.name,
+                                lastSuccessfulGeoData.country
+                            );
+                        }
+                    }
+
+                    // Resize temperature chart
+                    if (lastSuccessfulOneCallData && temperatureChartCtx) {
+                        const chartDailyTemps = lastSuccessfulOneCallData.daily.slice(0, 7).map((day) => day.temp);
+                        const chartDailyTimestamps = lastSuccessfulOneCallData.daily.slice(0, 7).map((day) => day.dt);
+                        const timezoneOffset = lastSuccessfulOneCallData.timezone_offset;
+                        drawTemperatureChart(chartDailyTemps, chartDailyTimestamps, timezoneOffset);
+                    } else if (temperatureChartCtx) {
+                        drawTemperatureChart([], [], 0); // Draw empty chart if no data
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
