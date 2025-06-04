@@ -754,7 +754,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText("" + cityName + ", " + countryName + "", width * 0.1, height - 20);
+        heroBannerCtx.fillText("" + cityName + ", " + countryName + "", width * 0.95, height - 175);
         heroBannerCtx.shadowColor = "transparent";
     }
 
