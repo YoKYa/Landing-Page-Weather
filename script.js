@@ -1,10 +1,9 @@
-const OPENWEATHER_API_KEY = "28ab0f61d4bd77f5a1cf1ab69e6725d3"; // Leave this as empty string. The Canvas environment will inject the API key.
+const OPENWEATHER_API_KEY = "28ab0f61d4bd77f5a1cf1ab69e6725d3";
 const GEO_BASE_URL = "https://api.openweathermap.org/geo/1.0/direct";
 const ONE_CALL_BASE_URL = "https://api.openweathermap.org/data/3.0/onecall";
 const DEFAULT_LOCATION = "Surabaya";
 const MAX_RECENT_SEARCHES = 5;
 
-// DOM Elements
 const searchLocationInput = document.getElementById("search-location");
 const searchButton = document.getElementById("button-search");
 const welcomeMessage = document.getElementById("welcome-message");
@@ -38,25 +37,22 @@ let recentSearches = [];
 let lastSuccessfulGeoData = null;
 let lastSuccessfulOneCallData = null;
 let weatherUpdateIntervalId = null;
-let chartDataPoints = []; // For temperature chart interactivity
+let chartDataPoints = [];
 
-// Animation variables for hero banner
 let raindrops = [];
 let stars = [];
-let clouds = []; // Store cloud objects for more control
-let cloudOffset = 0; // Single offset for all clouds
-let loadedWeatherIcon = null; // To store the loaded weather icon image
+let clouds = [];
+let cloudOffset = 0;
+let loadedWeatherIcon = null;
 
 const NUM_STARS = 100;
-const BASE_NUM_CLOUDS = 3; // Base number of clouds for animation
+const BASE_NUM_CLOUDS = 3;
 const NUM_RAINDROPS = 50;
 
-// Initialize Bootstrap Modal if it exists
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("errorModal")) {
         errorModalInstance = new bootstrap.Modal(document.getElementById("errorModal"));
     }
-    // Initial resize for hero banner canvas
     if (heroBannerCanvas) {
         const parentDiv = heroBannerCanvas.parentElement;
         heroBannerCanvas.width = parentDiv.offsetWidth;
@@ -64,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// --- Utility Functions ---
 function getWeatherIconText(iconCode) {
     const map = {
         "01d": "Cerah",
@@ -131,7 +126,6 @@ function getMoonPhaseText(phase) {
     return "Tidak diketahui";
 }
 
-// --- Recent Searches Logic ---
 function addRecentSearch(location) {
     const formattedLocation = location
         .split(" ")
@@ -167,7 +161,6 @@ function renderRecentSearches() {
     });
 }
 
-// --- UI Update Functions ---
 function clearWeatherDisplay() {
     welcomeMessage.style.display = "block";
     currentLocationDisplay.textContent = "";
@@ -177,7 +170,7 @@ function clearWeatherDisplay() {
     currentTemp.textContent = "--";
     weatherDescription.textContent = "Memuat...";
     feelsLikeTemp.textContent = "--";
-    currentWeatherIcon.style.display = "none"; // Hide icon when clearing
+    currentWeatherIcon.style.display = "none";
     weatherSummary.textContent = "";
     windDirectionText.textContent = "--";
     windSpeed.innerHTML = "-- <span>km/jam</span>";
@@ -191,7 +184,7 @@ function clearWeatherDisplay() {
     if (heroBannerCtx) {
         heroBannerCtx.clearRect(0, 0, heroBannerCanvas.width, heroBannerCanvas.height);
     }
-    loadedWeatherIcon = null; // Clear loaded icon
+    loadedWeatherIcon = null;
 }
 
 function showLoading(show) {
@@ -199,16 +192,16 @@ function showLoading(show) {
     if (show) {
         errorMessage.style.display = "none";
         searchErrorMessage.style.display = "none";
-        welcomeMessage.style.display = "none"; // Hide welcome message when loading
-        currentLocationDisplay.textContent = ""; // Clear location display during loading
+        welcomeMessage.style.display = "none";
+        currentLocationDisplay.textContent = "";
     }
 }
 
 function displayMainError(message) {
     errorMessage.textContent = message;
     errorMessage.style.display = "block";
-    welcomeMessage.style.display = "none"; // Hide welcome message on error
-    currentLocationDisplay.textContent = ""; // Clear location display on error
+    welcomeMessage.style.display = "none";
+    currentLocationDisplay.textContent = "";
 }
 
 function displaySearchError(message, showAsModal = false) {
@@ -234,7 +227,7 @@ function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
     const iconUrl = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     currentWeatherIcon.src = iconUrl;
     currentWeatherIcon.alt = getWeatherIconText(iconCode);
-    currentWeatherIcon.style.display = "block"; // Show icon after loading
+    currentWeatherIcon.style.display = "block";
     currentTemp.textContent = current.temp.toFixed(1);
     weatherDescription.textContent = current.weather[0].description.charAt(0).toUpperCase() + current.weather[0].description.slice(1);
     feelsLikeTemp.textContent = current.feels_like.toFixed(1);
@@ -250,12 +243,10 @@ function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
     visibilityDistance.textContent = (current.visibility / 1000).toFixed(1) + " KM";
     cloudCover.textContent = current.clouds + "%";
 
-    // Load weather icon for banner
     const newWeatherIcon = new Image();
-    newWeatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    newWeatherIcon.src = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     newWeatherIcon.onload = () => {
         loadedWeatherIcon = newWeatherIcon;
-        // Only draw animation AFTER the icon is loaded
         const currentHour = date.getUTCHours();
         const weatherMain = current.weather[0].main;
         const cloudsPercentage = current.clouds;
@@ -274,9 +265,8 @@ function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
         );
     };
     newWeatherIcon.onerror = () => {
-        console.error(`Failed to load weather icon for code: ${iconCode}`);
+        console.error("Failed to load weather icon for code: " + iconCode + "");
         loadedWeatherIcon = null;
-        // Draw animation even if icon fails to load, but pass null for icon
         const currentHour = date.getUTCHours();
         const weatherMain = current.weather[0].main;
         const cloudsPercentage = current.clouds;
@@ -299,7 +289,7 @@ function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
 function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSeconds) {
     if (!temperatureChartCtx) return;
     temperatureChartCanvas.width = temperatureChartCanvas.offsetWidth;
-    temperatureChartCanvas.height = temperatureChartCanvas.offsetHeight > 0 ? temperatureChartCanvas.offsetHeight : 250; // Ensure height is positive
+    temperatureChartCanvas.height = temperatureChartCanvas.offsetHeight > 0 ? temperatureChartCanvas.offsetHeight : 250;
     temperatureChartCtx.clearRect(0, 0, temperatureChartCanvas.width, temperatureChartCanvas.height);
 
     const temperatures = dailyTempsData.map((dayTemp) => dayTemp.max);
@@ -317,7 +307,7 @@ function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSec
     const padding = 40;
     const chartWidth = temperatureChartCanvas.width - 2 * padding;
     const chartHeight = temperatureChartCanvas.height - 2 * padding;
-    if (chartWidth <= 0 || chartHeight <= 0) return; // Not enough space to draw
+    if (chartWidth <= 0 || chartHeight <= 0) return;
 
     const minTemp = Math.min(...temperatures);
     const maxTemp = Math.max(...temperatures);
@@ -365,7 +355,7 @@ function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSec
     temperatureChartCtx.beginPath();
     temperatureChartCtx.strokeStyle = "#EFB619";
     temperatureChartCtx.lineWidth = 2.5;
-    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Apply shadow to the line
+    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.3)";
     heroBannerCtx.shadowBlur = 5;
     heroBannerCtx.shadowOffsetY = 2;
     for (let i = 0; i < chartDataPoints.length; i++) {
@@ -374,7 +364,7 @@ function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSec
         else temperatureChartCtx.lineTo(point.x, point.y);
     }
     temperatureChartCtx.stroke();
-    heroBannerCtx.shadowColor = "transparent"; // Reset shadow after drawing
+    heroBannerCtx.shadowColor = "transparent";
     temperatureChartCtx.fillStyle = "#EFB619";
     for (let i = 0; i < chartDataPoints.length; i++) {
         const point = chartDataPoints[i];
@@ -409,23 +399,25 @@ function updateForecastDisplay(oneCallData) {
         let displayDay = localDate.toLocaleDateString("id-ID", { weekday: "long", timeZone: "UTC" });
         const tomorrow = new Date((Date.now() / 1000 + timezoneOffset + 86400) * 1000);
         if (dateKey === tomorrow.toISOString().split("T")[0]) displayDay = "Besok";
-
         const forecastCard =
-            "<div class='col'><div class='bg-3 rounded-2 p-3 text-center h-100 d-flex flex-column justify-content-between'><div class='fw-semibold' style='font-size: 0.95rem;'>" +
+            '<div class="col"><div class="bg-3 rounded-2 p-3 text-center h-100 d-flex flex-column justify-content-between"><div class="fw-semibold" style="font-size: 0.95rem;">' +
             displayDay +
-            "</div><img src='" +
+            '</div><img src="' +
             iconUrl +
-            "' width='120px' alt='" +
+            '" width="120px" alt="' +
             iconText +
-            "' class='mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/120x120/01798c/ffffff?text=" +
+            '" class="mx-auto" onerror="this.onerror=null; this.src="' +
+            'https://placehold.co/120x120/01798c/ffffff?text="' +
             encodeURIComponent(iconText) +
             "'; this.alt='" +
             iconText +
-            "';><div style='font-size: 0.9rem;'>" +
+            "';" +
+            '<div style="font-size: 0.9rem;">' +
             maxTemp +
             "° / " +
             minTemp +
             "°C</div></div></div>";
+
         forecastCardsContainer.insertAdjacentHTML("beforeend", forecastCard);
         forecastCount++;
     }
@@ -454,24 +446,23 @@ function updateWeatherDetailsDisplay(oneCallData, timezoneOffsetSeconds) {
         const col = document.createElement("div");
         col.className = "col";
         const card =
-            "<div class='weather-detail-card'><img src='" +
+            "<div class='weather-detail-card'><img src='" + // String literal 1
             getDetailIconPath(detail.type) +
-            "' alt='" +
+            "' alt='" + // String literal 2
             detail.label +
-            "' class='detail-icon mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/90x90/017082/ffffff?text=i'; this.alt='ikon " +
+            "' class='detail-icon mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/90x90/017082/ffffff?text=i'; this.alt='ikon'" + // String literal 3
             detail.label +
-            "'; /><div><div class='detail-label'>" +
+            ' /><div><div class="detail-label">' + // String literal 4
             detail.label +
-            "</div><div class='detail-value'>" +
-            (detail.value !== undefined ? detail.value : "--") +
-            "</div></div></div>";
+            "</div><div class='detail-value'>" + // String literal 5
+            (detail.value !== undefined ? detail.value : "--") + // String literal untuk "--" juga diubah
+            "</div></div></div>"; // String literal 6
         col.innerHTML = card;
         weatherDetailsGrid.appendChild(col);
     });
 }
 
-// --- Hero Banner Animation Logic ---
-let animationFrameId = null; // To store the animation frame ID for cancellation
+let animationFrameId = null;
 
 function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, weatherDescriptionText, feelsLikeTemperature, humidityPercentage, windSpeedText, weatherIconImage, cloudsPercentage, cityName, countryName) {
     if (!heroBannerCtx) return;
@@ -479,106 +470,87 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     const width = heroBannerCanvas.width;
     const height = 720;
 
-    // Clear canvas
     heroBannerCtx.clearRect(0, 0, width, height);
 
-    // Define colors from the app's palette
-    const color1 = "#00424c"; // Dark Teal
-    const color2 = "#015f6e"; // Medium Teal
-    const color3 = "#017082"; // Slightly lighter teal (from search card)
-    const color4 = "#01798c"; // Lighter Teal (bg-4)
-    const color5 = "#efb619"; // Gold/Yellow
+    const color1 = "#00424c";
+    const color2 = "#015f6e";
+    const color3 = "#017082";
+    const color4 = "#01798c";
+    const color5 = "#efb619";
 
-    // Draw ground
-    heroBannerCtx.fillStyle = color2; // Use a medium teal for the ground
-    heroBannerCtx.fillRect(0, height * 0.75, width, height * 0.25); // Make ground slightly flatter
+    heroBannerCtx.fillStyle = color2;
+    heroBannerCtx.fillRect(0, height * 0.75, width, height * 0.25);
 
-    // Draw hill (more subtle, using app colors)
     heroBannerCtx.beginPath();
     heroBannerCtx.arc(width / 2, height * 0.75, width * 0.6, 0, Math.PI, true);
     heroBannerCtx.closePath();
-    heroBannerCtx.fillStyle = color3; // Use a slightly lighter teal for the hill
+    heroBannerCtx.fillStyle = color3;
     heroBannerCtx.fill();
 
-    // Determine time of day and sky color
     let skyColorTop, skyColorBottom;
     let isDay = true;
     if (currentHour >= 6 && currentHour < 12) {
-        // Morning (Sunrise/Daybreak)
-        skyColorTop = "#87CEEB"; // Light blue
-        skyColorBottom = color4; // Lighter Teal
+        skyColorTop = "#87CEEB";
+        skyColorBottom = color4;
     } else if (currentHour >= 12 && currentHour < 18) {
-        // Afternoon (Midday)
-        skyColorTop = "#00BFFF"; // Deep sky blue
-        skyColorBottom = color4; // Lighter Teal
+        skyColorTop = "#00BFFF";
+        skyColorBottom = color4;
     } else if (currentHour >= 18 && currentHour < 21) {
-        // Evening (Sunset)
-        skyColorTop = color5; // Gold
-        skyColorBottom = color1; // Dark Teal
+        skyColorTop = color5;
+        skyColorBottom = color1;
         isDay = false;
     } else {
-        // Night
-        skyColorTop = color1; // Dark Teal
-        skyColorBottom = color2; // Medium Teal
+        skyColorTop = color1;
+        skyColorBottom = color2;
         isDay = false;
     }
 
-    // Draw sky gradient
     const skyGradient = heroBannerCtx.createLinearGradient(0, 0, 0, height * 0.75);
     skyGradient.addColorStop(0, skyColorTop);
     skyGradient.addColorStop(1, skyColorBottom);
     heroBannerCtx.fillStyle = skyGradient;
     heroBannerCtx.fillRect(0, 0, width, height * 0.75);
 
-    // Draw sun/moon based on time of day
     if (isDay) {
-        // Sun with a glow
         const sunX = width * 0.8;
         const sunY = height * 0.2;
         const sunRadius = 50;
 
-        // Radial gradient for glow
         const sunGlow = heroBannerCtx.createRadialGradient(sunX, sunY, sunRadius * 0.8, sunX, sunY, sunRadius * 1.5);
-        sunGlow.addColorStop(0, "rgba(255, 215, 0, 0.8)"); // Gold with opacity
-        sunGlow.addColorStop(1, "rgba(255, 215, 0, 0)"); // Transparent gold
+        sunGlow.addColorStop(0, "rgba(255, 215, 0, 0.8)");
+        sunGlow.addColorStop(1, "rgba(255, 215, 0, 0)");
         heroBannerCtx.fillStyle = sunGlow;
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(sunX, sunY, sunRadius * 1.5, 0, Math.PI * 2);
         heroBannerCtx.fill();
 
-        // Solid sun disc
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-        heroBannerCtx.fillStyle = color5; // Gold
+        heroBannerCtx.fillStyle = color5;
         heroBannerCtx.fill();
     } else {
-        // Moon with a subtle glow
         const moonX = width * 0.8;
         const moonY = height * 0.2;
         const moonRadius = 40;
 
-        // Radial gradient for glow
         const moonGlow = heroBannerCtx.createRadialGradient(moonX, moonY, moonRadius * 0.8, moonX, moonY, moonRadius * 1.2);
-        moonGlow.addColorStop(0, "rgba(240, 230, 140, 0.6)"); // Khaki with opacity
-        moonGlow.addColorStop(1, "rgba(240, 230, 140, 0)"); // Transparent khaki
+        moonGlow.addColorStop(0, "rgba(240, 230, 140, 0.6)");
+        moonGlow.addColorStop(1, "rgba(240, 230, 140, 0)");
         heroBannerCtx.fillStyle = moonGlow;
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(moonX, moonY, moonRadius * 1.2, 0, Math.PI * 2);
         heroBannerCtx.fill();
 
-        // Solid moon disc
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
-        heroBannerCtx.fillStyle = "#F0E68C"; // Khaki
+        heroBannerCtx.fillStyle = "#F0E68C";
         heroBannerCtx.fill();
 
-        // Crescent effect (draw a circle to "cut out" a crescent)
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(moonX - 15, moonY - 15, moonRadius, 0, Math.PI * 2);
-        heroBannerCtx.fillStyle = skyColorTop; // Match sky color to hide part of the moon
+        heroBannerCtx.fillStyle = skyColorTop;
         heroBannerCtx.fill();
 
-        // Stars
         if (stars.length === 0) {
             for (let i = 0; i < NUM_STARS; i++) {
                 stars.push({
@@ -593,7 +565,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         stars.forEach((star) => {
             heroBannerCtx.beginPath();
             heroBannerCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-            heroBannerCtx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+            heroBannerCtx.fillStyle = "rgba(255, 255, 255, " + star.opacity + ")";
             heroBannerCtx.fill();
             star.opacity += star.twinkleSpeed;
             if (star.opacity > 1 || star.opacity < 0.5) {
@@ -602,49 +574,43 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         });
     }
 
-    // Manage clouds based on cloud cover
-    const targetNumClouds = Math.round((cloudsPercentage / 25) * BASE_NUM_CLOUDS); // Scale clouds based on percentage (0-100)
+    const targetNumClouds = Math.round((cloudsPercentage / 25) * BASE_NUM_CLOUDS);
     if (clouds.length < targetNumClouds) {
-        // Add new clouds if needed
         for (let i = clouds.length; i < targetNumClouds; i++) {
             clouds.push({
                 x: Math.random() * width,
                 y: Math.random() * height * 0.4,
-                size: Math.random() * 0.5 + 0.5, // Scale factor for cloud size
-                speed: (Math.random() * 0.5 + 0.2) * (Math.random() > 0.5 ? 1 : -1), // Random speed and direction
+                size: Math.random() * 0.5 + 0.5,
+                speed: (Math.random() * 0.5 + 0.2) * (Math.random() > 0.5 ? 1 : -1),
             });
         }
     } else if (clouds.length > targetNumClouds) {
-        // Remove excess clouds
         clouds = clouds.slice(0, targetNumClouds);
     }
 
-    // Draw and animate clouds
     clouds.forEach((cloud) => {
-        let cloudColor = "rgba(240, 248, 255, 0.7)"; // Default light, semi-transparent
+        let cloudColor = "rgba(240, 248, 255, 0.7)";
         if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
-            cloudColor = "rgba(105, 105, 105, 0.9)"; // Darker, less transparent for rain
+            cloudColor = "rgba(105, 105, 105, 0.9)";
         } else if (weatherMain === "Fog" || weatherMain === "Mist" || weatherMain === "Haze") {
-            cloudColor = "rgba(200, 200, 200, 0.8)"; // Gray, more opaque for fog
+            cloudColor = "rgba(200, 200, 200, 0.8)";
         } else if (weatherMain === "Clouds") {
-            cloudColor = `rgba(240, 248, 255, ${0.4 + (cloudsPercentage / 100) * 0.5})`; // Opacity based on percentage
+            cloudColor = "rgba(240, 248, 255, " + (0.4 + (cloudsPercentage / 100) * 0.5) + ")";
         } else if (isDay) {
-            cloudColor = "rgba(240, 248, 255, 0.3)"; // Very light, transparent clouds
+            cloudColor = "rgba(240, 248, 255, 0.3)";
         }
 
         drawCloud(heroBannerCtx, cloud.x, cloud.y, cloudColor, cloud.size);
         cloud.x += cloud.speed;
-        // Loop clouds around the canvas
         if (cloud.speed > 0 && cloud.x > width + 100) {
             cloud.x = -150;
-            cloud.y = Math.random() * height * 0.4; // Randomize y for new entry
+            cloud.y = Math.random() * height * 0.4;
         } else if (cloud.speed < 0 && cloud.x < -150) {
             cloud.x = width + 100;
-            cloud.y = Math.random() * height * 0.4; // Randomize y for new entry
+            cloud.y = Math.random() * height * 0.4;
         }
     });
 
-    // Draw rain/thunderstorm effects
     if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
         if (raindrops.length === 0) {
             for (let i = 0; i < NUM_RAINDROPS; i++) {
@@ -661,7 +627,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
             heroBannerCtx.beginPath();
             heroBannerCtx.moveTo(drop.x, drop.y);
             heroBannerCtx.lineTo(drop.x, drop.y + drop.length);
-            heroBannerCtx.strokeStyle = "rgba(173, 216, 230, 0.8)"; // LightBlue with opacity
+            heroBannerCtx.strokeStyle = "rgba(173, 216, 230, 0.8)";
             heroBannerCtx.lineWidth = 2;
             heroBannerCtx.stroke();
 
@@ -673,24 +639,21 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         });
 
         if (weatherMain === "Thunderstorm") {
-            // Simple lightning effect
             if (Math.random() < 0.01) {
-                // 1% chance per frame
                 heroBannerCtx.beginPath();
                 heroBannerCtx.moveTo(width * 0.4 + Math.random() * width * 0.2, 0);
                 heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.3);
                 heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.2);
                 heroBannerCtx.lineTo(width * 0.5 + Math.random() * width * 0.1, height * 0.6);
-                heroBannerCtx.strokeStyle = "#FFFF00"; // Yellow
+                heroBannerCtx.strokeStyle = "#FFFF00";
                 heroBannerCtx.lineWidth = 3;
                 heroBannerCtx.stroke();
             }
         }
     } else {
-        raindrops = []; // Clear raindrops if not raining
+        raindrops = [];
     }
 
-    // Draw Weather Icon (top-left)
     if (weatherIconImage && weatherIconImage.complete) {
         const iconSize = 72;
         const iconX = width * 0.1;
@@ -698,21 +661,19 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.drawImage(weatherIconImage, iconX, iconY, iconSize, iconSize);
     }
 
-    // Draw Temperature (next to icon)
     if (currentTemperature !== undefined && currentTemperature !== null) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "bold 48px Outfit";
         heroBannerCtx.textAlign = "left";
         heroBannerCtx.textBaseline = "middle";
-        heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)"; // Add shadow for better readability
+        heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(`${currentTemperature.toFixed(1)}°C`, width * 0.1 + 80, height * 0.2 + 36); // Position next to icon
-        heroBannerCtx.shadowColor = "transparent"; // Reset shadow
+        heroBannerCtx.fillText("" + currentTemperature.toFixed(1) + "°C", width * 0.1 + 80, height * 0.2 + 36);
+        heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Draw Weather Description (below temperature)
     if (weatherDescriptionText) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "24px Outfit";
@@ -722,11 +683,10 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(weatherDescriptionText, width * 0.1, height * 0.2 + 80); // Position below icon/temp
+        heroBannerCtx.fillText(weatherDescriptionText, width * 0.1, height * 0.2 + 80);
         heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Draw Feels Like Temperature (below description)
     if (feelsLikeTemperature) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "18px Outfit";
@@ -736,11 +696,10 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(`Terasa seperti ${feelsLikeTemperature}°`, width * 0.1, height * 0.2 + 120);
+        heroBannerCtx.fillText("Terasa seperti " + feelsLikeTemperature + "°", width * 0.1, height * 0.2 + 120);
         heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Draw Humidity (below feels like)
     if (humidityPercentage) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "18px Outfit";
@@ -750,11 +709,10 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(`Kelembapan: ${humidityPercentage}`, width * 0.1, height * 0.2 + 150);
+        heroBannerCtx.fillText("Kelembapan: " + humidityPercentage + "", width * 0.1, height * 0.2 + 150);
         heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Draw Wind Speed (below humidity)
     if (windSpeedText) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "18px Outfit";
@@ -764,34 +722,31 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(`Angin: ${windSpeedText}`, width * 0.1, height * 0.2 + 180);
+        heroBannerCtx.fillText("Angin: " + windSpeedText + "", width * 0.1, height * 0.2 + 180);
         heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Draw City Name and Country (bottom left, adjusted for new layout)
     if (cityName && countryName) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "bold 24px Outfit";
-        heroBannerCtx.textAlign = "left"; // Align to left
+        heroBannerCtx.textAlign = "left";
         heroBannerCtx.textBaseline = "bottom";
         heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
         heroBannerCtx.shadowBlur = 5;
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
-        heroBannerCtx.fillText(`${cityName}, ${countryName}`, width * 0.1, height - 20); // Position at bottom left with padding
+        heroBannerCtx.fillText("" + cityName + ", " + countryName + "", width * 0.1, height - 20);
         heroBannerCtx.shadowColor = "transparent";
     }
 
-    // Request next animation frame
     if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId); // Cancel previous frame to prevent multiple loops
+        cancelAnimationFrame(animationFrameId);
     }
     animationFrameId = requestAnimationFrame(() =>
         drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, weatherDescriptionText, feelsLikeTemperature, humidityPercentage, windSpeedText, weatherIconImage, cloudsPercentage, cityName, countryName)
     );
 }
 
-// Helper function to draw a cloud (more stylized)
 function drawCloud(ctx, x, y, color, size = 1) {
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -804,12 +759,11 @@ function drawCloud(ctx, x, y, color, size = 1) {
     ctx.fill();
 }
 
-// --- API Fetching Logic ---
 async function getGeoCoordinates(locationName) {
     const geoResponse = await fetch(GEO_BASE_URL + "?q=" + encodeURIComponent(locationName) + "&limit=1&appid=" + OPENWEATHER_API_KEY);
     if (!geoResponse.ok) throw new Error("Gagal geocoding (Status: " + geoResponse.status + ")");
     const geoDataArray = await geoResponse.json();
-    if (geoDataArray.length === 0) throw new Error("Lokasi '" + locationName + "' tidak ditemukan.");
+    if (geoDataArray.length === 0) throw new Error('Lokasi "' + locationName + '" tidak ditemukan.');
     const firstGeoData = geoDataArray[0];
     return { name: firstGeoData.name, country: firstGeoData.country, lat: firstGeoData.lat, lon: firstGeoData.lon };
 }
@@ -824,7 +778,6 @@ async function fetchWeather(locationNameToFetch, isManualSearch = false) {
     showLoading(true);
     errorMessage.style.display = "none";
     if (OPENWEATHER_API_KEY === "") {
-        // Check if API key is truly empty
         displayMainError("Kunci API OpenWeatherMap belum dikonfigurasi. Silakan tambahkan kunci API Anda.");
         showLoading(false);
         return;
@@ -857,7 +810,7 @@ async function fetchWeather(locationNameToFetch, isManualSearch = false) {
         lastSuccessfulOneCallData = weatherData;
         renderRecentSearches();
     } catch (error) {
-        console.error("Error fetching weather for '" + effectiveLocationName || "lokasi terakhir" + "':", error);
+        console.error('Error fetching weather for "' + effectiveLocationName || "lokasi terakhir" + '":', error);
         const friendlyErrorMessage =
             error.message.includes("tidak ditemukan") || error.message.includes("Gagal geocoding") ? error.message : "Gagal memuat data untuk " + effectiveLocationName || "lokasi terakhir" + ". Periksa koneksi atau coba lagi.";
         if (isManualSearch) displaySearchError(friendlyErrorMessage, true);
@@ -877,7 +830,6 @@ async function fetchWeather(locationNameToFetch, isManualSearch = false) {
     }
 }
 
-// --- Event Listeners ---
 if (searchButton) {
     searchButton.addEventListener("click", () => {
         const location = searchLocationInput.value.trim();
@@ -900,7 +852,7 @@ if (temperatureChartCanvas) {
         const mouseY = e.clientY - rect.top;
         let closestPoint = null;
         let minDist = Infinity;
-        const hoverThreshold = 15; // pixels
+        const hoverThreshold = 15;
 
         for (const point of chartDataPoints) {
             const dist = Math.sqrt(Math.pow(mouseX - point.x, 2) + Math.pow(mouseY - point.y, 2));
@@ -956,24 +908,21 @@ if (contactForm) {
     });
 }
 
-// --- Initial Load and Interval ---
 document.addEventListener("DOMContentLoaded", () => {
     renderRecentSearches();
-    fetchWeather(DEFAULT_LOCATION, true); // Fetch for default on load
+    fetchWeather(DEFAULT_LOCATION, true);
 
     if (weatherUpdateIntervalId) clearInterval(weatherUpdateIntervalId);
     weatherUpdateIntervalId = setInterval(() => {
         const locationToUpdate = lastSuccessfulGeoData ? lastSuccessfulGeoData.name : DEFAULT_LOCATION;
-        fetchWeather(locationToUpdate, false); // Auto-refresh without treating as manual search
-    }, 5 * 60 * 1000); // Refresh every 5 minutes
+        fetchWeather(locationToUpdate, false);
+    }, 5 * 60 * 1000);
 
     window.addEventListener("resize", () => {
-        // Resize hero banner canvas
         if (heroBannerCanvas) {
             const parentDiv = heroBannerCanvas.parentElement;
             heroBannerCanvas.width = parentDiv.offsetWidth;
             heroBannerCanvas.height = parentDiv.offsetHeight;
-            // Redraw hero banner if data is available
             if (lastSuccessfulOneCallData) {
                 const currentHour = new Date((lastSuccessfulOneCallData.current.dt + lastSuccessfulOneCallData.timezone_offset) * 1000).getUTCHours();
                 const weatherMain = lastSuccessfulOneCallData.current.weather[0].main;
@@ -994,14 +943,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Resize temperature chart
         if (lastSuccessfulOneCallData && temperatureChartCtx) {
             const chartDailyTemps = lastSuccessfulOneCallData.daily.slice(0, 7).map((day) => day.temp);
             const chartDailyTimestamps = lastSuccessfulOneCallData.daily.slice(0, 7).map((day) => day.dt);
             const timezoneOffset = lastSuccessfulOneCallData.timezone_offset;
             drawTemperatureChart(chartDailyTemps, chartDailyTimestamps, timezoneOffset);
         } else if (temperatureChartCtx) {
-            drawTemperatureChart([], [], 0); // Draw empty chart if no data
+            drawTemperatureChart([], [], 0);
         }
     });
 });

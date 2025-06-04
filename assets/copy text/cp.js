@@ -6,7 +6,8 @@ const forecastCard =
     iconUrl +
     "' width='120px' alt='" +
     iconText +
-    "' class='mx-auto' onerror='this.onerror=null; this.src='https://placehold.co/120x120/01798c/ffffff?text=" +
+    "' class='mx-auto' onerror='this.onerror=null; this.src=" +
+    "https://placehold.co/120x120/01798c/ffffff?text=" +
     encodeURIComponent(iconText) +
     "'; this.alt='" +
     iconText +
