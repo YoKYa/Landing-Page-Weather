@@ -7,6 +7,31 @@
 .navbar-toggler:focus {
     box-shadow: none;
 }
+/* Added box-shadow to navbar */
+.navbar {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-item {
+        margin-bottom: 8px;
+        padding: 8px 15px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Remove bottom margin for the last item */
+    .navbar-nav .nav-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Adjust padding for the nav-link inside the item */
+    .navbar-nav .nav-item .nav-link {
+        padding: 0; /* Remove default nav-link padding */
+    }
+}
+
 main {
     color: whitesmoke;
     height: fit-content;
@@ -447,6 +472,105 @@ html {
 .footer-copyright {
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.7);
+}
+
+/* New Footer Styles */
+.footer-brand-logo {
+    height: 60px; /* Adjust as needed */
+    margin-bottom: 1rem;
+}
+
+.footer-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+}
+
+.footer-contact-info p {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.footer-contact-info svg {
+    margin-right: 0.8rem;
+    color: #efb619; /* Icon color */
+    font-size: 1.1rem;
+}
+
+.footer-links-title,
+.footer-connect-title {
+    color: #efb619;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.footer-links-list {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links-list li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links-list a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-links-list a:hover {
+    color: #efb619;
+}
+
+.footer-newsletter-input {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    color: whitesmoke;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.footer-newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.footer-subscribe-btn {
+    background-color: #efb619;
+    color: #00424c;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.footer-subscribe-btn:hover {
+    background-color: #d8a007;
+    transform: translateY(-1px);
+}
+
+.footer-social-icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.footer-social-icons a {
+    color: whitesmoke;
+    font-size: 1.5rem;
+    transition: color 0.2s ease;
+}
+
+.footer-social-icons a:hover {
+    color: #efb619;
 }
 
 /* Weather Map Section Styles (for the section container if content is added later) */

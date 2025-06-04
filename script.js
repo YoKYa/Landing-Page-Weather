@@ -218,7 +218,7 @@ function displaySearchError(message, showAsModal = false) {
 
 function updateCurrentWeatherDisplay(oneCallData, dataGeografis) {
     welcomeMessage.style.display = "none";
-    currentLocationDisplay.textContent = dataGeografis.name + ", " + dataGeografis.country;
+    // currentLocationDisplay.textContent = dataGeografis.name + ", " + dataGeografis.country;
     const current = oneCallData.current;
     const timezoneOffset = oneCallData.timezone_offset;
     const date = new Date((current.dt + timezoneOffset) * 1000);
@@ -299,7 +299,7 @@ function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSec
         chartDataPoints = [];
         temperatureChartCtx.fillStyle = "rgba(255,255,255,0.7)";
         temperatureChartCtx.font = "14px Outfit";
-        temperatureChartCtx.textAlign = "center";
+        temperatureChartCtx.textAlign = "center"; // Center text
         temperatureChartCtx.fillText("Data prakiraan tidak tersedia untuk grafik.", temperatureChartCanvas.width / 2, temperatureChartCanvas.height / 2);
         return;
     }
@@ -355,16 +355,18 @@ function drawTemperatureChart(dailyTempsData, dailyTimestamps, timezoneOffsetSec
     temperatureChartCtx.beginPath();
     temperatureChartCtx.strokeStyle = "#EFB619";
     temperatureChartCtx.lineWidth = 2.5;
-    heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.3)";
-    heroBannerCtx.shadowBlur = 5;
-    heroBannerCtx.shadowOffsetY = 2;
+    temperatureChartCtx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Apply shadow for the line
+    temperatureChartCtx.shadowBlur = 5;
+    temperatureChartCtx.shadowOffsetX = 2;
+    temperatureChartCtx.shadowOffsetY = 2;
     for (let i = 0; i < chartDataPoints.length; i++) {
         const point = chartDataPoints[i];
         if (i === 0) temperatureChartCtx.moveTo(point.x, point.y);
         else temperatureChartCtx.lineTo(point.x, point.y);
     }
     temperatureChartCtx.stroke();
-    heroBannerCtx.shadowColor = "transparent";
+    temperatureChartCtx.shadowColor = "transparent"; // Reset shadow for subsequent drawings
+
     temperatureChartCtx.fillStyle = "#EFB619";
     for (let i = 0; i < chartDataPoints.length; i++) {
         const point = chartDataPoints[i];
@@ -468,7 +470,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     if (!heroBannerCtx) return;
 
     const width = heroBannerCanvas.width;
-    const height = 720;
+    const height = 640; // Set to the min-height of the parent div
 
     heroBannerCtx.clearRect(0, 0, width, height);
 
@@ -478,44 +480,50 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     const color4 = "#01798c";
     const color5 = "#efb619";
 
+    // Draw the base ground/ocean
     heroBannerCtx.fillStyle = color2;
     heroBannerCtx.fillRect(0, height * 0.75, width, height * 0.25);
 
+    // Draw the curved horizon/landmass
     heroBannerCtx.beginPath();
     heroBannerCtx.arc(width / 2, height * 0.75, width * 0.6, 0, Math.PI, true);
     heroBannerCtx.closePath();
     heroBannerCtx.fillStyle = color3;
     heroBannerCtx.fill();
 
+    // Determine sky colors based on time of day
     let skyColorTop, skyColorBottom;
     let isDay = true;
     if (currentHour >= 6 && currentHour < 12) {
-        skyColorTop = "#87CEEB";
+        skyColorTop = "#87CEEB"; // Light blue for morning
         skyColorBottom = color4;
     } else if (currentHour >= 12 && currentHour < 18) {
-        skyColorTop = "#00BFFF";
+        skyColorTop = "#00BFFF"; // Deeper blue for afternoon
         skyColorBottom = color4;
     } else if (currentHour >= 18 && currentHour < 21) {
-        skyColorTop = color5;
+        skyColorTop = color5; // Orange/yellow for sunset
         skyColorBottom = color1;
         isDay = false;
     } else {
-        skyColorTop = color1;
+        skyColorTop = color1; // Dark blue/teal for night
         skyColorBottom = color2;
         isDay = false;
     }
 
+    // Draw sky gradient
     const skyGradient = heroBannerCtx.createLinearGradient(0, 0, 0, height * 0.75);
     skyGradient.addColorStop(0, skyColorTop);
     skyGradient.addColorStop(1, skyColorBottom);
     heroBannerCtx.fillStyle = skyGradient;
     heroBannerCtx.fillRect(0, 0, width, height * 0.75);
 
+    // Draw sun or moon based on time of day
     if (isDay) {
         const sunX = width * 0.8;
         const sunY = height * 0.2;
         const sunRadius = 50;
 
+        // Sun glow
         const sunGlow = heroBannerCtx.createRadialGradient(sunX, sunY, sunRadius * 0.8, sunX, sunY, sunRadius * 1.5);
         sunGlow.addColorStop(0, "rgba(255, 215, 0, 0.8)");
         sunGlow.addColorStop(1, "rgba(255, 215, 0, 0)");
@@ -524,6 +532,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.arc(sunX, sunY, sunRadius * 1.5, 0, Math.PI * 2);
         heroBannerCtx.fill();
 
+        // Sun disk
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
         heroBannerCtx.fillStyle = color5;
@@ -533,6 +542,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         const moonY = height * 0.2;
         const moonRadius = 40;
 
+        // Moon glow
         const moonGlow = heroBannerCtx.createRadialGradient(moonX, moonY, moonRadius * 0.8, moonX, moonY, moonRadius * 1.2);
         moonGlow.addColorStop(0, "rgba(240, 230, 140, 0.6)");
         moonGlow.addColorStop(1, "rgba(240, 230, 140, 0)");
@@ -541,16 +551,19 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.arc(moonX, moonY, moonRadius * 1.2, 0, Math.PI * 2);
         heroBannerCtx.fill();
 
+        // Moon disk
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
-        heroBannerCtx.fillStyle = "#F0E68C";
+        heroBannerCtx.fillStyle = "#F0E68C"; // Pale goldenrod
         heroBannerCtx.fill();
 
+        // Moon craters/shadows (simple crescent effect)
         heroBannerCtx.beginPath();
         heroBannerCtx.arc(moonX - 15, moonY - 15, moonRadius, 0, Math.PI * 2);
-        heroBannerCtx.fillStyle = skyColorTop;
+        heroBannerCtx.fillStyle = skyColorTop; // Use sky color to simulate shadow
         heroBannerCtx.fill();
 
+        // Stars for night
         if (stars.length === 0) {
             for (let i = 0; i < NUM_STARS; i++) {
                 stars.push({
@@ -574,6 +587,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         });
     }
 
+    // Draw clouds based on cloudiness percentage
     const targetNumClouds = Math.round((cloudsPercentage / 25) * BASE_NUM_CLOUDS);
     if (clouds.length < targetNumClouds) {
         for (let i = clouds.length; i < targetNumClouds; i++) {
@@ -581,7 +595,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
                 x: Math.random() * width,
                 y: Math.random() * height * 0.4,
                 size: Math.random() * 0.5 + 0.5,
-                speed: (Math.random() * 0.5 + 0.2) * (Math.random() > 0.5 ? 1 : -1),
+                speed: (Math.random() * 0.5 + 0.2) * (Math.random() > 0.5 ? 1 : -1), // Random direction
             });
         }
     } else if (clouds.length > targetNumClouds) {
@@ -589,19 +603,20 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     }
 
     clouds.forEach((cloud) => {
-        let cloudColor = "rgba(240, 248, 255, 0.7)";
+        let cloudColor = "rgba(240, 248, 255, 0.7)"; // Default light cloud
         if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
-            cloudColor = "rgba(105, 105, 105, 0.9)";
+            cloudColor = "rgba(105, 105, 105, 0.9)"; // Darker for rain
         } else if (weatherMain === "Fog" || weatherMain === "Mist" || weatherMain === "Haze") {
-            cloudColor = "rgba(200, 200, 200, 0.8)";
+            cloudColor = "rgba(200, 200, 200, 0.8)"; // Grayish for fog
         } else if (weatherMain === "Clouds") {
-            cloudColor = "rgba(240, 248, 255, " + (0.4 + (cloudsPercentage / 100) * 0.5) + ")";
+            cloudColor = "rgba(240, 248, 255, " + (0.4 + (cloudsPercentage / 100) * 0.5) + ")"; // Vary opacity with cloudiness
         } else if (isDay) {
-            cloudColor = "rgba(240, 248, 255, 0.3)";
+            cloudColor = "rgba(240, 248, 255, 0.3)"; // Lighter for clear day
         }
 
         drawCloud(heroBannerCtx, cloud.x, cloud.y, cloudColor, cloud.size);
         cloud.x += cloud.speed;
+        // Reset cloud position if it goes off screen
         if (cloud.speed > 0 && cloud.x > width + 100) {
             cloud.x = -150;
             cloud.y = Math.random() * height * 0.4;
@@ -611,6 +626,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         }
     });
 
+    // Draw raindrops if raining/thunderstorm
     if (weatherMain === "Rain" || weatherMain === "Drizzle" || weatherMain === "Thunderstorm") {
         if (raindrops.length === 0) {
             for (let i = 0; i < NUM_RAINDROPS; i++) {
@@ -627,17 +643,18 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
             heroBannerCtx.beginPath();
             heroBannerCtx.moveTo(drop.x, drop.y);
             heroBannerCtx.lineTo(drop.x, drop.y + drop.length);
-            heroBannerCtx.strokeStyle = "rgba(173, 216, 230, 0.8)";
+            heroBannerCtx.strokeStyle = "rgba(173, 216, 230, 0.8)"; // Light blue
             heroBannerCtx.lineWidth = 2;
             heroBannerCtx.stroke();
 
             drop.y += drop.speed;
             if (drop.y > height * 0.7) {
-                drop.y = -drop.length;
-                drop.x = Math.random() * width;
+                drop.y = -drop.length; // Reset to top
+                drop.x = Math.random() * width; // Random X
             }
         });
 
+        // Draw lightning if thunderstorm
         if (weatherMain === "Thunderstorm") {
             if (Math.random() < 0.01) {
                 heroBannerCtx.beginPath();
@@ -645,15 +662,16 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
                 heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.3);
                 heroBannerCtx.lineTo(width * 0.4 + Math.random() * width * 0.2, height * 0.2);
                 heroBannerCtx.lineTo(width * 0.5 + Math.random() * width * 0.1, height * 0.6);
-                heroBannerCtx.strokeStyle = "#FFFF00";
+                heroBannerCtx.strokeStyle = "#FFFF00"; // Yellow
                 heroBannerCtx.lineWidth = 3;
                 heroBannerCtx.stroke();
             }
         }
     } else {
-        raindrops = [];
+        raindrops = []; // Clear raindrops if not raining
     }
 
+    // Draw weather icon, temperature, and description on canvas
     if (weatherIconImage && weatherIconImage.complete) {
         const iconSize = 72;
         const iconX = width * 0.1;
@@ -661,6 +679,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.drawImage(weatherIconImage, iconX, iconY, iconSize, iconSize);
     }
 
+    // Add text information with shadows for readability
     if (currentTemperature !== undefined && currentTemperature !== null) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "bold 48px Outfit";
@@ -671,7 +690,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowOffsetX = 2;
         heroBannerCtx.shadowOffsetY = 2;
         heroBannerCtx.fillText("" + currentTemperature.toFixed(1) + "°C", width * 0.1 + 80, height * 0.2 + 36);
-        heroBannerCtx.shadowColor = "transparent";
+        heroBannerCtx.shadowColor = "transparent"; // Reset shadow
     }
 
     if (weatherDescriptionText) {
@@ -729,7 +748,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     if (cityName && countryName) {
         heroBannerCtx.fillStyle = "white";
         heroBannerCtx.font = "bold 24px Outfit";
-        heroBannerCtx.textAlign = "left";
+        heroBannerCtx.textAlign = "right";
         heroBannerCtx.textBaseline = "bottom";
         heroBannerCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
         heroBannerCtx.shadowBlur = 5;
@@ -739,6 +758,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
         heroBannerCtx.shadowColor = "transparent";
     }
 
+    // Request next frame for animation
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
     }
@@ -747,6 +767,7 @@ function drawHeroBannerAnimation(currentHour, weatherMain, currentTemperature, w
     );
 }
 
+// Helper function to draw a cloud
 function drawCloud(ctx, x, y, color, size = 1) {
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -810,9 +831,9 @@ async function fetchWeather(locationNameToFetch, isManualSearch = false) {
         lastSuccessfulOneCallData = weatherData;
         renderRecentSearches();
     } catch (error) {
-        console.error('Error fetching weather for "' + effectiveLocationName || "lokasi terakhir" + '":', error);
+        console.error('Error fetching weather for "' + (effectiveLocationName || "lokasi terakhir") + '":', error);
         const friendlyErrorMessage =
-            error.message.includes("tidak ditemukan") || error.message.includes("Gagal geocoding") ? error.message : "Gagal memuat data untuk " + effectiveLocationName || "lokasi terakhir" + ". Periksa koneksi atau coba lagi.";
+            error.message.includes("tidak ditemukan") || error.message.includes("Gagal geocoding") ? error.message : "Gagal memuat data untuk " + (effectiveLocationName || "lokasi terakhir") + ". Periksa koneksi atau coba lagi.";
         if (isManualSearch) displaySearchError(friendlyErrorMessage, true);
         else displayMainError(friendlyErrorMessage);
 
