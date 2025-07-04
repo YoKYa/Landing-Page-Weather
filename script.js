@@ -49,17 +49,6 @@ const NUM_STARS = 100;
 const BASE_NUM_CLOUDS = 3;
 const NUM_RAINDROPS = 50;
 
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("errorModal")) {
-        errorModalInstance = new bootstrap.Modal(document.getElementById("errorModal"));
-    }
-    if (heroBannerCanvas) {
-        const parentDiv = heroBannerCanvas.parentElement;
-        heroBannerCanvas.width = parentDiv.offsetWidth;
-        heroBannerCanvas.height = parentDiv.offsetHeight;
-    }
-});
-
 function getWeatherIconText(iconCode) {
     const map = {
         "01d": "Cerah",
@@ -930,6 +919,14 @@ if (contactForm) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("errorModal")) {
+        errorModalInstance = new bootstrap.Modal(document.getElementById("errorModal"));
+    }
+    if (heroBannerCanvas) {
+        const parentDiv = heroBannerCanvas.parentElement;
+        heroBannerCanvas.width = parentDiv.offsetWidth;
+        heroBannerCanvas.height = parentDiv.offsetHeight;
+    }
     renderRecentSearches();
     fetchWeather(DEFAULT_LOCATION, true);
 
@@ -973,4 +970,25 @@ document.addEventListener("DOMContentLoaded", () => {
             drawTemperatureChart([], [], 0);
         }
     });
+    const animatedElements = document.querySelectorAll(".scroll-animate");
+
+    if (animatedElements.length > 0) {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            }
+        );
+
+        animatedElements.forEach((element) => {
+            observer.observe(element);
+        });
+    }
 });

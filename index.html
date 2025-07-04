@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Aplikasi Cuaca</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-        <!-- Font Awesome for social media icons -->
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -13,10 +12,11 @@
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
         />
+        <link rel="stylesheet" href="styles.css" />
     </head>
     <body class="outfit" data-bs-spy="scroll" data-bs-target="#navbars" data-bs-offset="70" tabindex="0">
         <header class="outfit">
-            <nav class="navbar navbar-expand-lg navbar-dark bg-1">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-1 fixed-top">
                 <div class="container-fluid">
                     <a class="navbar-brand d-flex align-items-center mb-1" href="#">
                         <img src="https://www.gamelab.id/uploads/report/project_21678/21678_20250604_185418.png" alt="Logo Aplikasi Cuaca" style="height: 50px; margin: 0 10px" />
@@ -156,9 +156,8 @@
                     </div>
                 </div>
             </section>
-
             <section class="container mt-4" id="prakiraan-cuaca-section">
-                <div class="bg-4 rounded-2 p-4 mx-2">
+                <div class="bg-4 rounded-2 p-4 mx-2 scroll-animate">
                     <h2 class="fs-4 mb-3">Prakiraan Cuaca</h2>
                     <div>
                         <h3 class="text-white-50 fs-5">Gambaran Umum Temperatur</h3>
@@ -169,12 +168,12 @@
                 </div>
             </section>
             <section class="container mt-4" id="weather-details-section">
-                <div class="bg-4 rounded-2 p-4 mx-2">
+                <div class="bg-4 rounded-2 p-4 mx-2 scroll-animate">
                     <h2 class="fs-4 mb-3">Detail Cuaca</h2>
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="weather-details-grid"></div>
                 </div>
             </section>
-            <section class="container" id="about-app-section">
+            <section class="container scroll-animate" id="about-app-section">
                 <h2 class="fs-3 text-center mb-4">Tentang Aplikasi Cuaca Ini</h2>
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
@@ -201,10 +200,10 @@
                 </div>
             </section>
             <section class="container" id="faq-section">
-                <h2 class="faq-main-title">Pertanyaan yang Sering Diajukan</h2>
-                <p class="faq-subtitle">Jawaban cepat untuk pertanyaan yang mungkin Anda miliki. Tidak dapat menemukan apa yang Anda cari? Kirimkan kami pesan.</p>
+                <h2 class="faq-main-title scroll-animate">Pertanyaan yang Sering Diajukan</h2>
+                <p class="faq-subtitle scroll-animate">Jawaban cepat untuk pertanyaan yang mungkin Anda miliki. Tidak dapat menemukan apa yang Anda cari? Kirimkan kami pesan.</p>
                 <div class="row">
-                    <div class="col-md-6 faq-item">
+                    <div class="col-md-6 faq-item scroll-animate">
                         <div class="d-flex">
                             <div class="flex-shrink-0 faq-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
@@ -219,7 +218,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 faq-item">
+                    <div class="col-md-6 faq-item scroll-animate">
                         <div class="d-flex">
                             <div class="flex-shrink-0 faq-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
@@ -234,7 +233,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 faq-item">
+                    <div class="col-md-6 faq-item scroll-animate">
                         <div class="d-flex">
                             <div class="flex-shrink-0 faq-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
@@ -249,7 +248,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 faq-item">
+                    <div class="col-md-6 faq-item scroll-animate">
                         <div class="d-flex">
                             <div class="flex-shrink-0 faq-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-patch-question-fill" viewBox="0 0 16 16">
@@ -268,7 +267,7 @@
             </section>
             <section class="container" id="contact-us-section">
                 <div class="row">
-                    <div class="col-lg-7 col-md-6 mb-4 mb-md-0">
+                    <div class="col-lg-7 col-md-6 mb-4 mb-md-0 scroll-animate">
                         <h2 class="fs-3 mb-4" style="color: #efb619">Punya Pertanyaan?</h2>
                         <form id="contactForm">
                             <div class="mb-3">
@@ -294,7 +293,7 @@
                             <button type="submit" class="contact-submit-btn">KIRIM PESAN</button>
                         </form>
                     </div>
-                    <div class="col-lg-5 col-md-6 d-flex flex-column justify-content-center align-items-center align-items-md-start ps-md-5">
+                    <div class="col-lg-5 col-md-6 d-flex flex-column justify-content-center align-items-center align-items-md-start ps-md-5 scroll-animate">
                         <div class="contact-image-placeholder w-100 mb-4">
                             <img src="assets/windy" alt="windy" width="400" height="400" />
                             <span class="my-2">Ada yang bisa saya bantu di tengah badai ini?</span>
@@ -326,7 +325,6 @@
         <footer class="outfit bg-1 text-white py-4">
             <div class="container">
                 <div class="row">
-                    <!-- Column 1: Brand and Description -->
                     <div class="col-md-4 mb-4 mb-md-0 text-center text-md-start">
                         <img src="https://www.gamelab.id/uploads/report/project_21678/21678_20250604_185418.png" alt="Logo Aplikasi Cuaca" class="footer-brand-logo" />
                         <p class="footer-description">Aplikasi Cuaca ini dirancang untuk memberikan informasi cuaca terkini dan prakiraan akurat dengan antarmuka yang menarik dan responsif.</p>
@@ -342,7 +340,6 @@
                         </div>
                     </div>
 
-                    <!-- Column 2: Quick Links -->
                     <div class="col-md-4 mb-4 mb-md-0 text-center text-md-start">
                         <h5 class="footer-links-title">Tautan Cepat</h5>
                         <ul class="footer-links-list">
@@ -354,7 +351,6 @@
                         </ul>
                     </div>
 
-                    <!-- Column 3: Stay Connected -->
                     <div class="col-md-4 text-center text-md-start">
                         <h5 class="footer-connect-title">Tetap Terhubung</h5>
                         <p class="footer-description">Berlangganan buletin kami dan tetap dapatkan berita dan wawasan terbaru.</p>
@@ -371,7 +367,6 @@
                     </div>
                 </div>
 
-                <!-- Bottom Row: Copyright -->
                 <div class="row mt-4 pt-3 border-top border-secondary border-opacity-25">
                     <div class="col-12 text-center">
                         <p class="mb-0 footer-copyright">&copy; 2025 Aplikasi Cuaca.</p>
@@ -399,5 +394,6 @@
         <div id="chart-tooltip"></div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="script.js"></script>
     </body>
 </html>
